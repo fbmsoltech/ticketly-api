@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "supportflow-api"
+name = "ticketly-api"
 version = "0.1.0"
 description = "API REST para gestao de tickets e suporte tecnico."
 readme = "README.md"

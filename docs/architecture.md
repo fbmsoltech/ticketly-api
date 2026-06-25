@@ -13,8 +13,8 @@ negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 3 adiciona a infraestrutura inicial de banco de dados sem implementar
-regras de domínio.
+A Fase 4 adiciona os models iniciais de domínio e a primeira migration real sem
+implementar regras de negócio, CRUD, schemas, repositories ou services.
 
 Estrutura atual relevante:
 
@@ -30,11 +30,21 @@ app/
 |   |-- __init__.py
 |   |-- base.py
 |   `-- session.py
+|-- models/
+|   |-- customer.py
+|   |-- role.py
+|   |-- ticket.py
+|   |-- ticket_category.py
+|   |-- ticket_comment.py
+|   |-- ticket_priority.py
+|   |-- ticket_status.py
+|   `-- user.py
 `-- main.py
 alembic/
 |-- versions/
 |   |-- .gitkeep
 |   `-- 0001_initial_database_setup.py
+|   `-- 0002_initial_domain_models.py
 |-- env.py
 `-- script.py.mako
 ```
@@ -47,6 +57,7 @@ Responsabilidades atuais:
   incluindo `DATABASE_URL`.
 - `app/db/base.py`: define a base declarativa do SQLAlchemy.
 - `app/db/session.py`: define engine e sessionmaker para uso futuro.
+- `app/models/`: define as entidades persistidas e seus relacionamentos.
 - `alembic/`: contém a configuração inicial de migrations.
 
 O endpoint de health check não consulta banco de dados nem qualquer dependência
@@ -54,7 +65,6 @@ externa nesta fase.
 
 Ainda não fazem parte desta fase:
 
-- models de domínio;
 - schemas de domínio;
 - repositories;
 - services de domínio;
