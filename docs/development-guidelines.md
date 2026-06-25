@@ -64,6 +64,44 @@ Durante uma fase:
 
 Na Fase 1, apenas documentação e guias iniciais devem ser criados.
 
+Na Fase 2, o escopo permitido é:
+
+- criar o setup inicial Python 3.13+;
+- configurar FastAPI, Uvicorn e Pydantic Settings;
+- criar a estrutura inicial `app/`;
+- criar o endpoint simples `GET /api/v1/health`;
+- configurar Ruff, Black e Mypy;
+- atualizar a documentação relacionada.
+
+Na Fase 2, ainda não devem ser criados:
+
+- banco de dados;
+- SQLAlchemy;
+- Alembic;
+- psycopg;
+- Docker;
+- autenticação;
+- CRUD;
+- models, schemas, repositories ou services de domínio;
+- testes automatizados;
+- GitHub Actions.
+
+## Ferramentas de qualidade
+
+A Fase 2 configura as ferramentas iniciais de qualidade no `pyproject.toml`.
+
+Comandos recomendados:
+
+```bash
+ruff check .
+black --check .
+mypy .
+```
+
+O Ruff deve validar, no mínimo, as famílias de regras `E`, `F`, `I`, `B` e
+`UP`. O Black e o Ruff usam linha máxima de 88 caracteres. O Mypy inicia em
+modo estrito para manter a base tipada desde o primeiro código Python.
+
 ## Regra de atualização de documentação
 
 A documentação deve acompanhar a evolução do projeto.
