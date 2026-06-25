@@ -13,8 +13,9 @@ negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 4 adiciona os models iniciais de domínio e a primeira migration real sem
-implementar regras de negócio, CRUD, schemas, repositories ou services.
+A Fase 5 adiciona schemas Pydantic v2 e repositories iniciais sobre a modelagem
+criada na Fase 4, sem implementar endpoints de domínio, services ou CRUD exposto
+por API.
 
 Estrutura atual relevante:
 
@@ -31,6 +32,26 @@ app/
 |   |-- base.py
 |   `-- session.py
 |-- models/
+|   |-- customer.py
+|   |-- role.py
+|   |-- ticket.py
+|   |-- ticket_category.py
+|   |-- ticket_comment.py
+|   |-- ticket_priority.py
+|   |-- ticket_status.py
+|   `-- user.py
+|-- repositories/
+|   |-- base.py
+|   |-- customer.py
+|   |-- role.py
+|   |-- ticket.py
+|   |-- ticket_category.py
+|   |-- ticket_comment.py
+|   |-- ticket_priority.py
+|   |-- ticket_status.py
+|   `-- user.py
+|-- schemas/
+|   |-- base.py
 |   |-- customer.py
 |   |-- role.py
 |   |-- ticket.py
@@ -58,6 +79,10 @@ Responsabilidades atuais:
 - `app/db/base.py`: define a base declarativa do SQLAlchemy.
 - `app/db/session.py`: define engine e sessionmaker para uso futuro.
 - `app/models/`: define as entidades persistidas e seus relacionamentos.
+- `app/schemas/`: define contratos Pydantic v2 de criação, atualização e
+  leitura para uso futuro pela API.
+- `app/repositories/`: encapsula consultas e operações básicas de persistência
+  com SQLAlchemy.
 - `alembic/`: contém a configuração inicial de migrations.
 
 O endpoint de health check não consulta banco de dados nem qualquer dependência
@@ -65,12 +90,11 @@ externa nesta fase.
 
 Ainda não fazem parte desta fase:
 
-- schemas de domínio;
-- repositories;
+- endpoints de domínio;
 - services de domínio;
 - autenticação;
 - autorização;
-- CRUD;
+- CRUD exposto por API;
 - testes automatizados;
 - Docker;
 - Docker Compose;
