@@ -12,7 +12,7 @@ Exemplos:
 
 - `feature/phase-01-documentation-foundation`
 - `feature/phase-02-python-tooling`
-- `feature/phase-03-fastapi-bootstrap`
+- `feature/phase-03-database-infrastructure`
 
 Cada branch deve representar uma fase ou uma entrega pequena e bem delimitada.
 
@@ -34,12 +34,14 @@ Exemplos:
 
 - `docs: add initial project documentation`
 - `chore: configure python tooling`
+- `chore: configure database infrastructure`
 - `feat: add ticket creation use case`
 - `test: add ticket service tests`
 
 ## Padrão de PRs
 
-Pull requests devem ser objetivos e relacionados a uma única fase ou mudança coesa.
+Pull requests devem ser objetivos e relacionados a uma única fase ou mudança
+coesa.
 
 Um PR deve conter:
 
@@ -49,7 +51,8 @@ Um PR deve conter:
 - evidências de validação quando houver código;
 - observações sobre documentação atualizada.
 
-PRs não devem misturar documentação, infraestrutura, domínio e endpoints sem necessidade clara.
+PRs não devem misturar documentação, infraestrutura, domínio e endpoints sem
+necessidade clara.
 
 ## Regra de uma fase por vez
 
@@ -64,7 +67,7 @@ Durante uma fase:
 
 Na Fase 1, apenas documentação e guias iniciais devem ser criados.
 
-Na Fase 2, o escopo permitido é:
+Na Fase 2, o escopo permitido foi:
 
 - criar o setup inicial Python 3.13+;
 - configurar FastAPI, Uvicorn e Pydantic Settings;
@@ -73,22 +76,36 @@ Na Fase 2, o escopo permitido é:
 - configurar Ruff, Black e Mypy;
 - atualizar a documentação relacionada.
 
-Na Fase 2, ainda não devem ser criados:
+Na Fase 3, o escopo permitido é:
 
-- banco de dados;
-- SQLAlchemy;
-- Alembic;
-- psycopg;
-- Docker;
-- autenticação;
+- adicionar PostgreSQL como banco relacional planejado;
+- adicionar SQLAlchemy 2.x;
+- adicionar Alembic;
+- adicionar `psycopg[binary]`;
+- configurar `DATABASE_URL`;
+- criar `app/db/base.py`;
+- criar `app/db/session.py`;
+- criar a estrutura inicial de migrations;
+- documentar a configuração de banco.
+
+Na Fase 3, ainda não devem ser criados:
+
 - CRUD;
-- models, schemas, repositories ou services de domínio;
+- endpoints de domínio;
+- models de domínio;
+- schemas Pydantic de domínio;
+- repositories;
+- services;
+- autenticação;
+- autorização;
+- Docker;
+- Docker Compose;
 - testes automatizados;
 - GitHub Actions.
 
 ## Ferramentas de qualidade
 
-A Fase 2 configura as ferramentas iniciais de qualidade no `pyproject.toml`.
+As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.
 
 Comandos recomendados:
 
@@ -99,8 +116,27 @@ mypy .
 ```
 
 O Ruff deve validar, no mínimo, as famílias de regras `E`, `F`, `I`, `B` e
-`UP`. O Black e o Ruff usam linha máxima de 88 caracteres. O Mypy inicia em
-modo estrito para manter a base tipada desde o primeiro código Python.
+`UP`. O Black e o Ruff usam linha máxima de 88 caracteres. O Mypy inicia em modo
+estrito para manter a base tipada desde o primeiro código Python.
+
+## Banco de dados e migrations
+
+O banco é configurado por meio da variável `DATABASE_URL`.
+
+O Alembic deve ler a URL a partir das settings da aplicação, evitando duplicação
+de configuração entre aplicação e migrations.
+
+Comandos úteis:
+
+```bash
+alembic current
+alembic revision --autogenerate -m "describe change"
+alembic upgrade head
+alembic downgrade -1
+```
+
+Enquanto não existirem models de domínio, migrations devem permanecer vazias ou
+limitadas à infraestrutura explicitamente solicitada.
 
 ## Regra de atualização de documentação
 
@@ -110,7 +146,9 @@ Atualizações esperadas:
 
 - mudanças arquiteturais devem atualizar `docs/architecture.md`;
 - mudanças de fluxo de negócio devem atualizar `docs/business-flow.md`;
-- mudanças no processo de desenvolvimento devem atualizar `docs/development-guidelines.md`;
+- mudanças de banco devem atualizar `docs/database.md`;
+- mudanças no processo de desenvolvimento devem atualizar
+  `docs/development-guidelines.md`;
 - mudanças relevantes para agentes devem atualizar `AGENTS.md`;
 - mudanças de visão geral, execução ou status devem atualizar `README.md`.
 
@@ -118,7 +156,7 @@ Documentação desatualizada deve ser tratada como débito técnico.
 
 ## Boas práticas de código
 
-Quando a implementação começar, o código deverá seguir as práticas abaixo:
+O código deverá seguir as práticas abaixo:
 
 - usar tipagem sempre que possível;
 - manter funções e classes com responsabilidades claras;
@@ -157,4 +195,5 @@ Toda revisão deve priorizar:
 - atualização da documentação;
 - impacto em segurança, autenticação e autorização quando essas áreas existirem.
 
-Antes de aprovar uma mudança, verifique se ela não cria funcionalidades fora da fase atual.
+Antes de aprovar uma mudança, verifique se ela não cria funcionalidades fora da
+fase atual.

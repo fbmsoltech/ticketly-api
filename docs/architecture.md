@@ -2,18 +2,21 @@
 
 ## Visão geral
 
-O Ticketly API será uma API REST moderna para gestão de tickets e suporte técnico.
+O Ticketly API será uma API REST moderna para gestão de tickets e suporte
+técnico.
 
-A arquitetura futura deverá seguir separação clara entre camadas, com foco em legibilidade, testabilidade, manutenção e evolução incremental.
+A arquitetura futura deverá seguir separação clara entre camadas, com foco em
+legibilidade, testabilidade, manutenção e evolução incremental.
 
-O projeto será organizado para evitar acoplamento excessivo entre HTTP, regra de negócio e persistência de dados.
+O projeto será organizado para evitar acoplamento excessivo entre HTTP, regra de
+negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 2 introduz a aplicação FastAPI mínima e a estrutura inicial do pacote
-`app`.
+A Fase 3 adiciona a infraestrutura inicial de banco de dados sem implementar
+regras de domínio.
 
-Estrutura criada nesta fase:
+Estrutura atual relevante:
 
 ```text
 app/
@@ -23,34 +26,47 @@ app/
 |           `-- health.py
 |-- core/
 |   `-- config.py
+|-- db/
+|   |-- __init__.py
+|   |-- base.py
+|   `-- session.py
 `-- main.py
+alembic/
+|-- versions/
+|   |-- .gitkeep
+|   `-- 0001_initial_database_setup.py
+|-- env.py
+`-- script.py.mako
 ```
 
 Responsabilidades atuais:
 
 - `app/main.py`: cria a instância FastAPI e registra as rotas da versão v1.
 - `app/api/v1/routes/health.py`: expõe o endpoint simples de health check.
-- `app/core/config.py`: centraliza configurações iniciais com Pydantic Settings.
+- `app/core/config.py`: centraliza configurações com Pydantic Settings,
+  incluindo `DATABASE_URL`.
+- `app/db/base.py`: define a base declarativa do SQLAlchemy.
+- `app/db/session.py`: define engine e sessionmaker para uso futuro.
+- `alembic/`: contém a configuração inicial de migrations.
 
-O endpoint de health check desta fase não consulta banco de dados nem qualquer
-dependência externa.
+O endpoint de health check não consulta banco de dados nem qualquer dependência
+externa nesta fase.
 
 Ainda não fazem parte desta fase:
 
-- banco de dados;
-- SQLAlchemy;
-- Alembic;
-- models;
+- models de domínio;
 - schemas de domínio;
 - repositories;
 - services de domínio;
 - autenticação;
+- autorização;
 - CRUD;
 - testes automatizados;
 - Docker;
+- Docker Compose;
 - GitHub Actions.
 
-## Separação de responsabilidades
+## Separaçao de responsabilidades
 
 ### API routes
 
@@ -73,7 +89,8 @@ Services concentrarão as regras de negócio e os casos de uso da aplicação.
 Responsabilidades esperadas:
 
 - validar regras do domínio;
-- coordenar fluxos como criação, atribuição, comentário e mudança de status de tickets;
+- coordenar fluxos como criação, atribuição, comentário e mudança de status de
+  tickets;
 - chamar repositories;
 - decidir erros de negócio;
 - manter a lógica fora das rotas.
@@ -90,11 +107,13 @@ Responsabilidades esperadas:
 - atualizar dados;
 - remover ou desativar registros quando aplicável.
 
-Repositories não devem conter regra de negócio. Eles devem oferecer operações de persistência para que os services coordenem o comportamento da aplicação.
+Repositories não devem conter regra de negócio. Eles devem oferecer operações de
+persistência para que os services coordenem o comportamento da aplicação.
 
 ### Models
 
-Models representarão tabelas e relacionamentos do banco de dados usando SQLAlchemy 2.x.
+Models representarão tabelas e relacionamentos do banco de dados usando
+SQLAlchemy 2.x.
 
 Responsabilidades esperadas:
 
@@ -115,9 +134,23 @@ Responsabilidades esperadas:
 - formatar respostas;
 - separar dados internos do banco de dados dos contratos públicos da API.
 
+## Camada de banco
+
+A camada `app/db/` prepara a persistência relacional para fases futuras.
+
+Nesta fase ela contém apenas:
+
+- uma base declarativa do SQLAlchemy;
+- uma engine configurada por `DATABASE_URL`;
+- um `sessionmaker` para criação de sessões.
+
+Nenhuma rota usa sessão de banco nesta fase. O uso em endpoints deverá acontecer
+somente quando existirem models, repositories e services apropriados.
+
 ## Por que evitar controller gordo
 
-Controller gordo ocorre quando rotas acumulam validação de regra de negócio, acesso ao banco, transformação de dados e decisões de fluxo.
+Controller gordo ocorre quando rotas acumulam validação de regra de negócio,
+acesso ao banco, transformação de dados e decisões de fluxo.
 
 Esse padrão deve ser evitado porque:
 
@@ -135,66 +168,56 @@ Fluxo futuro esperado:
 
 ```text
 Cliente HTTP
-  ↓
+  |
 API route
-  ↓
+  |
 Schema de entrada
-  ↓
+  |
 Service
-  ↓
+  |
 Repository
-  ↓
+  |
 Banco de dados
-  ↓
+  |
 Repository
-  ↓
+  |
 Service
-  ↓
+  |
 Schema de saída
-  ↓
+  |
 Resposta HTTP
 ```
-
-Exemplo conceitual:
-
-1. Um cliente envia uma requisição para abrir um ticket.
-2. A rota recebe a requisição e valida o payload com schema Pydantic.
-3. A rota chama um service de tickets.
-4. O service valida as regras de domínio.
-5. O service chama o repository para persistir o ticket.
-6. O repository interage com o banco.
-7. O service devolve o resultado.
-8. A rota retorna a resposta HTTP adequada.
 
 ## Estrutura futura de pastas
 
 ```text
-supportflow-api/
-├── app/
-│   ├── api/
-│   │   └── v1/
-│   │       ├── routes/
-│   │       └── dependencies/
-│   ├── core/
-│   ├── db/
-│   ├── models/
-│   ├── repositories/
-│   ├── schemas/
-│   ├── services/
-│   ├── observability/
-│   └── main.py
-├── alembic/
-├── docs/
-├── tests/
-├── scripts/
-├── .github/
-│   └── workflows/
-├── AGENTS.md
-├── README.md
-├── pyproject.toml
-├── docker-compose.yml
-├── Dockerfile
-└── .env.example
+ticketly-api/
+|-- app/
+|   |-- api/
+|   |   `-- v1/
+|   |       |-- routes/
+|   |       `-- dependencies/
+|   |-- core/
+|   |-- db/
+|   |-- models/
+|   |-- repositories/
+|   |-- schemas/
+|   |-- services/
+|   |-- observability/
+|   `-- main.py
+|-- alembic/
+|-- docs/
+|-- tests/
+|-- scripts/
+|-- .github/
+|   `-- workflows/
+|-- AGENTS.md
+|-- README.md
+|-- pyproject.toml
+|-- docker-compose.yml
+|-- Dockerfile
+`-- .env.example
 ```
 
-O nome da pasta raiz pode variar conforme o ambiente local. A organização interna deverá respeitar essa separação quando a implementação começar.
+O nome da pasta raiz pode variar conforme o ambiente local. A organização
+interna deverá respeitar essa separação conforme as fases evoluírem.
