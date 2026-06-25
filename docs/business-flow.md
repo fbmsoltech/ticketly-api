@@ -127,3 +127,17 @@ Regras iniciais previstas:
 - Clientes devem acessar apenas recursos permitidos para seu contexto.
 - Atendentes devem acessar recursos relacionados ao atendimento.
 - Administradores devem ter acesso a recursos de gestão.
+
+## Modelagem inicial da Fase 4
+
+A Fase 4 cria a representação persistida inicial das entidades previstas:
+
+- usuários e papéis;
+- clientes;
+- tickets;
+- comentários de tickets;
+- categorias, status e prioridades de tickets.
+
+Essa modelagem registra apenas a estrutura relacional inicial. Regras como
+transições de status, permissões, atribuição de atendentes e validação de acesso
+serão implementadas em services nas fases futuras.

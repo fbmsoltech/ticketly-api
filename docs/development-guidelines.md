@@ -103,6 +103,28 @@ Na Fase 3, ainda não devem ser criados:
 - testes automatizados;
 - GitHub Actions.
 
+Na Fase 4, o escopo permitido é:
+
+- criar models iniciais de domínio com SQLAlchemy 2.x;
+- mapear entidades e relacionamentos previstos;
+- configurar o Alembic para carregar a metadata dos models;
+- criar a primeira migration real do banco de dados;
+- atualizar a documentação relacionada.
+
+Na Fase 4, ainda não devem ser criados:
+
+- CRUD;
+- endpoints de domínio;
+- schemas Pydantic de domínio;
+- repositories;
+- services;
+- autenticação;
+- autorização;
+- Docker;
+- Docker Compose;
+- testes automatizados;
+- GitHub Actions.
+
 ## Ferramentas de qualidade
 
 As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.
@@ -135,8 +157,8 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
-Enquanto não existirem models de domínio, migrations devem permanecer vazias ou
-limitadas à infraestrutura explicitamente solicitada.
+Migrations devem refletir mudanças reais de schema e permanecer alinhadas à
+metadata dos models SQLAlchemy.
 
 ## Regra de atualização de documentação
 

@@ -6,7 +6,7 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 3 concluída - infraestrutura inicial de banco de dados.
+> Status: Fase 4 concluída - models iniciais de domínio e primeira migration real.
 
 ## Stack planejada
 
@@ -81,8 +81,9 @@ Documentos iniciais:
 
 ## Execução local
 
-Esta fase usa Python 3.13+ e prepara a configuração de banco de dados. Ainda não
-há autenticação, CRUD, models de domínio, testes automatizados, Docker ou CI/CD.
+Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio. Ainda não há
+autenticação, CRUD, schemas de domínio, repositories, services, testes
+automatizados, Docker ou CI/CD.
 
 Para preparar o ambiente local:
 
@@ -126,12 +127,14 @@ O health check não consulta o banco de dados nesta fase.
 
 ## Banco de dados
 
-A Fase 3 adiciona a infraestrutura inicial para PostgreSQL:
+A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 
 - `DATABASE_URL` configurado via ambiente;
 - base declarativa em `app/db/base.py`;
 - engine e sessionmaker em `app/db/session.py`;
-- configuração inicial do Alembic em `alembic/`.
+- configuração inicial do Alembic em `alembic/`;
+- models iniciais em `app/models/`;
+- migration real em `alembic/versions/0002_initial_domain_models.py`.
 
 Para validar a configuração do Alembic sem aplicar mudanças:
 
@@ -139,7 +142,8 @@ Para validar a configuração do Alembic sem aplicar mudanças:
 alembic current
 ```
 
-Como ainda não existem models de domínio, a migration inicial é vazia.
+As tabelas iniciais representam usuários, papéis, clientes, tickets,
+comentários, categorias, status e prioridades.
 
 Antes de executar `alembic upgrade head`, confirme que o banco e o usuário do
 `DATABASE_URL` existem no PostgreSQL local. Veja o passo a passo em

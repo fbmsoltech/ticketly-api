@@ -8,8 +8,7 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     app_env: str = "local"
     database_url: str = (
-        "postgresql+psycopg://supportflow_user:supportflow_password"
-        "@localhost:5432/supportflow_db"
+        "postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_db"
     )
 
     model_config = SettingsConfigDict(
