@@ -4,7 +4,7 @@ Ticketly API é uma API REST moderna para gestão de tickets e suporte técnico.
 
 Este projeto tem como objetivo construir um backend profissional de portfólio, com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação, autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: projeto em construção.
+> Status: Fase 2 concluída - setup inicial Python/FastAPI.
 
 ## Stack planejada
 
@@ -49,8 +49,9 @@ O projeto deverá evoluir por fases, evitando misturar responsabilidades e evita
 ## Roadmap inicial por fases
 
 - Fase 1: documentação base do projeto.
-- Fase 2: configuração inicial do ambiente Python e ferramentas de qualidade.
-- Fase 3: estrutura base da aplicação FastAPI.
+- Fase 2: setup inicial Python/FastAPI, estrutura base da aplicação e
+  ferramentas de qualidade.
+- Fase 3: expansão controlada da aplicação conforme escopo aprovado.
 - Fase 4: configuração de banco de dados, SQLAlchemy e Alembic.
 - Fase 5: modelagem inicial das entidades.
 - Fase 6: CRUDs principais.
@@ -69,3 +70,49 @@ Documentos iniciais:
 - `docs/architecture.md`
 - `docs/business-flow.md`
 - `docs/development-guidelines.md`
+
+## Execução local
+
+Esta fase usa Python 3.13+ e ainda não possui banco de dados, Docker,
+autenticação, CRUD ou testes automatizados.
+
+Para preparar o ambiente local:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+```
+
+No Windows PowerShell, a ativação do ambiente virtual pode ser feita com:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+
+Para iniciar a API:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Endpoint disponível nesta fase:
+
+- `GET /api/v1/health`
+
+## Qualidade
+
+Ferramentas configuradas nesta fase:
+
+- Ruff
+- Black
+- Mypy
+
+Comandos recomendados:
+
+```bash
+ruff check .
+black --check .
+mypy .
+```

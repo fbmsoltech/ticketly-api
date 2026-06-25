@@ -8,6 +8,48 @@ A arquitetura futura deverá seguir separação clara entre camadas, com foco em
 
 O projeto será organizado para evitar acoplamento excessivo entre HTTP, regra de negócio e persistência de dados.
 
+## Estado atual da arquitetura
+
+A Fase 2 introduz a aplicação FastAPI mínima e a estrutura inicial do pacote
+`app`.
+
+Estrutura criada nesta fase:
+
+```text
+app/
+|-- api/
+|   `-- v1/
+|       `-- routes/
+|           `-- health.py
+|-- core/
+|   `-- config.py
+`-- main.py
+```
+
+Responsabilidades atuais:
+
+- `app/main.py`: cria a instância FastAPI e registra as rotas da versão v1.
+- `app/api/v1/routes/health.py`: expõe o endpoint simples de health check.
+- `app/core/config.py`: centraliza configurações iniciais com Pydantic Settings.
+
+O endpoint de health check desta fase não consulta banco de dados nem qualquer
+dependência externa.
+
+Ainda não fazem parte desta fase:
+
+- banco de dados;
+- SQLAlchemy;
+- Alembic;
+- models;
+- schemas de domínio;
+- repositories;
+- services de domínio;
+- autenticação;
+- CRUD;
+- testes automatizados;
+- Docker;
+- GitHub Actions.
+
 ## Separação de responsabilidades
 
 ### API routes
