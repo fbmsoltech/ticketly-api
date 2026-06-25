@@ -24,6 +24,11 @@ class BaseRepository[ModelType: Base]:
         self.session.refresh(entity)
         return entity
 
+    def update(self, entity: ModelType) -> ModelType:
+        self.session.flush()
+        self.session.refresh(entity)
+        return entity
+
     def delete(self, entity: ModelType) -> None:
         self.session.delete(entity)
         self.session.flush()
