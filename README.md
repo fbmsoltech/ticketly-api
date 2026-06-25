@@ -6,7 +6,7 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 5 concluída - schemas Pydantic v2 e repositories iniciais.
+> Status: Fase 6 concluída - services e CRUD interno das entidades base.
 
 ## Stack planejada
 
@@ -62,7 +62,7 @@ evitando implementar funcionalidades antes do momento planejado.
   Alembic.
 - Fase 4: modelagem inicial das entidades.
 - Fase 5: schemas Pydantic v2 e repositories iniciais.
-- Fase 6: CRUDs principais.
+- Fase 6: services e CRUD interno das entidades base.
 - Fase 7: autenticação e autorização.
 - Fase 8: testes automatizados.
 - Fase 9: Docker e Docker Compose.
@@ -80,13 +80,14 @@ Documentos iniciais:
 - `docs/database.md`
 - `docs/development-guidelines.md`
 - `docs/schemas-and-repositories.md`
+- `docs/services.md`
 
 ## Execução local
 
 Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
-Pydantic v2 e repositories iniciais. Ainda não há endpoints de domínio,
-services, autenticação, CRUD exposto por API, testes automatizados, Docker ou
-CI/CD.
+Pydantic v2, repositories iniciais e services para CRUD interno. Ainda não há
+endpoints de domínio, autenticação, CRUD exposto por API, testes automatizados,
+Docker ou CI/CD.
 
 Para preparar o ambiente local:
 
@@ -139,6 +140,7 @@ A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 - models iniciais em `app/models/`;
 - repositories iniciais em `app/repositories/`;
 - schemas Pydantic v2 em `app/schemas/`;
+- services de CRUD interno em `app/services/`;
 - migration real em `alembic/versions/0002_initial_domain_models.py`.
 
 Para validar a configuração do Alembic sem aplicar mudanças:

@@ -13,9 +13,8 @@ negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 5 adiciona schemas Pydantic v2 e repositories iniciais sobre a modelagem
-criada na Fase 4, sem implementar endpoints de domínio, services ou CRUD exposto
-por API.
+A Fase 6 adiciona services para CRUD interno sobre os schemas e repositories
+criados na Fase 5, sem implementar endpoints de domínio ou CRUD exposto por API.
 
 Estrutura atual relevante:
 
@@ -60,6 +59,16 @@ app/
 |   |-- ticket_priority.py
 |   |-- ticket_status.py
 |   `-- user.py
+|-- services/
+|   |-- base.py
+|   |-- customer.py
+|   |-- role.py
+|   |-- ticket.py
+|   |-- ticket_category.py
+|   |-- ticket_comment.py
+|   |-- ticket_priority.py
+|   |-- ticket_status.py
+|   `-- user.py
 `-- main.py
 alembic/
 |-- versions/
@@ -83,6 +92,8 @@ Responsabilidades atuais:
   leitura para uso futuro pela API.
 - `app/repositories/`: encapsula consultas e operações básicas de persistência
   com SQLAlchemy.
+- `app/services/`: coordena casos de uso internos de CRUD usando schemas e
+  repositories.
 - `alembic/`: contém a configuração inicial de migrations.
 
 O endpoint de health check não consulta banco de dados nem qualquer dependência
@@ -91,7 +102,6 @@ externa nesta fase.
 Ainda não fazem parte desta fase:
 
 - endpoints de domínio;
-- services de domínio;
 - autenticação;
 - autorização;
 - CRUD exposto por API;
@@ -118,7 +128,7 @@ Rotas não devem conter regra de negócio.
 
 ### Services
 
-Services concentrarão as regras de negócio e os casos de uso da aplicação.
+Services concentram as regras de negócio e os casos de uso da aplicação.
 
 Responsabilidades esperadas:
 
@@ -128,6 +138,9 @@ Responsabilidades esperadas:
 - chamar repositories;
 - decidir erros de negócio;
 - manter a lógica fora das rotas.
+
+Na Fase 6, os services já oferecem CRUD interno básico e consultas específicas
+das entidades base, mas ainda não são expostos por endpoints HTTP.
 
 ### Repositories
 

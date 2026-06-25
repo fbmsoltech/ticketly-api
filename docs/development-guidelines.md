@@ -143,6 +143,25 @@ Na Fase 5, ainda não devem ser criados:
 - testes automatizados;
 - GitHub Actions.
 
+Na Fase 6, o escopo permitido é:
+
+- criar services para as entidades base;
+- implementar CRUD interno por meio de services;
+- reutilizar schemas Pydantic v2 e repositories existentes;
+- manter transações sem commit automático nos repositories;
+- documentar as responsabilidades da camada de services.
+
+Na Fase 6, ainda não devem ser criados:
+
+- endpoints de domínio;
+- autenticação;
+- autorização;
+- CRUD exposto por API;
+- Docker;
+- Docker Compose;
+- testes automatizados;
+- GitHub Actions.
+
 ## Ferramentas de qualidade
 
 As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.
@@ -191,6 +210,7 @@ Atualizações esperadas:
   `docs/development-guidelines.md`;
 - mudanças em schemas e repositories devem atualizar
   `docs/schemas-and-repositories.md`;
+- mudanças em services devem atualizar `docs/services.md`;
 - mudanças relevantes para agentes devem atualizar `AGENTS.md`;
 - mudanças de visão geral, execução ou status devem atualizar `README.md`.
 
