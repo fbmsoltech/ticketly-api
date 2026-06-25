@@ -162,6 +162,24 @@ Na Fase 6, ainda não devem ser criados:
 - testes automatizados;
 - GitHub Actions.
 
+Na Fase 7, o escopo permitido é:
+
+- criar endpoints CRUD REST para as entidades base já cobertas por services;
+- manter rotas finas, sem regra de negócio;
+- usar schemas Pydantic v2 como contratos de entrada e saída;
+- usar services como ponto de entrada da aplicação;
+- injetar services por dependências da API;
+- documentar os endpoints expostos e o ciclo transacional por requisição.
+
+Na Fase 7, ainda não devem ser criados:
+
+- autenticação;
+- autorização;
+- Docker;
+- Docker Compose;
+- testes automatizados;
+- GitHub Actions.
+
 ## Ferramentas de qualidade
 
 As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.

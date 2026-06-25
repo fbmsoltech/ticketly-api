@@ -13,8 +13,9 @@ negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 6 adiciona services para CRUD interno sobre os schemas e repositories
-criados na Fase 5, sem implementar endpoints de domínio ou CRUD exposto por API.
+A Fase 7 expõe endpoints CRUD REST para as entidades base já cobertas por
+schemas, repositories e services, mantendo rotas finas e delegando operações de
+aplicação para services.
 
 Estrutura atual relevante:
 
@@ -22,8 +23,19 @@ Estrutura atual relevante:
 app/
 |-- api/
 |   `-- v1/
+|       |-- dependencies/
+|       |   `-- services.py
 |       `-- routes/
-|           `-- health.py
+|           |-- common.py
+|           |-- customers.py
+|           |-- health.py
+|           |-- roles.py
+|           |-- ticket_categories.py
+|           |-- ticket_comments.py
+|           |-- ticket_priorities.py
+|           |-- ticket_statuses.py
+|           |-- tickets.py
+|           `-- users.py
 |-- core/
 |   `-- config.py
 |-- db/
@@ -82,11 +94,15 @@ alembic/
 Responsabilidades atuais:
 
 - `app/main.py`: cria a instância FastAPI e registra as rotas da versão v1.
+- `app/api/v1/dependencies/services.py`: monta services a partir da sessão de
+  banco da requisição.
 - `app/api/v1/routes/health.py`: expõe o endpoint simples de health check.
+- `app/api/v1/routes/`: expõe endpoints CRUD REST para as entidades base.
 - `app/core/config.py`: centraliza configurações com Pydantic Settings,
   incluindo `DATABASE_URL`.
 - `app/db/base.py`: define a base declarativa do SQLAlchemy.
-- `app/db/session.py`: define engine e sessionmaker para uso futuro.
+- `app/db/session.py`: define engine, sessionmaker e ciclo transacional da
+  sessão por requisição.
 - `app/models/`: define as entidades persistidas e seus relacionamentos.
 - `app/schemas/`: define contratos Pydantic v2 de criação, atualização e
   leitura para uso futuro pela API.
@@ -101,10 +117,8 @@ externa nesta fase.
 
 Ainda não fazem parte desta fase:
 
-- endpoints de domínio;
 - autenticação;
 - autorização;
-- CRUD exposto por API;
 - testes automatizados;
 - Docker;
 - Docker Compose;
@@ -139,8 +153,8 @@ Responsabilidades esperadas:
 - decidir erros de negócio;
 - manter a lógica fora das rotas.
 
-Na Fase 6, os services já oferecem CRUD interno básico e consultas específicas
-das entidades base, mas ainda não são expostos por endpoints HTTP.
+Na Fase 7, os services são chamados pelas rotas HTTP para expor CRUD REST das
+entidades base.
 
 ### Repositories
 
@@ -191,8 +205,8 @@ Nesta fase ela contém apenas:
 - uma engine configurada por `DATABASE_URL`;
 - um `sessionmaker` para criação de sessões.
 
-Nenhuma rota usa sessão de banco nesta fase. O uso em endpoints deverá acontecer
-somente quando existirem models, repositories e services apropriados.
+As rotas CRUD recebem uma sessão por dependência. A sessão confirma a transação
+ao final de requisições bem-sucedidas e executa rollback quando ocorre exceção.
 
 ## Por que evitar controller gordo
 
