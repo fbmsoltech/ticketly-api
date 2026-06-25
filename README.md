@@ -6,7 +6,7 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 6 concluída - services e CRUD interno das entidades base.
+> Status: Fase 7 concluída - endpoints CRUD REST das entidades base.
 
 ## Stack planejada
 
@@ -63,11 +63,12 @@ evitando implementar funcionalidades antes do momento planejado.
 - Fase 4: modelagem inicial das entidades.
 - Fase 5: schemas Pydantic v2 e repositories iniciais.
 - Fase 6: services e CRUD interno das entidades base.
-- Fase 7: autenticação e autorização.
-- Fase 8: testes automatizados.
-- Fase 9: Docker e Docker Compose.
-- Fase 10: CI/CD com GitHub Actions.
-- Fase 11: deploy no Render.
+- Fase 7: endpoints CRUD REST das entidades base.
+- Fase 8: autenticação e autorização.
+- Fase 9: testes automatizados.
+- Fase 10: Docker e Docker Compose.
+- Fase 11: CI/CD com GitHub Actions.
+- Fase 12: deploy no Render.
 
 ## Documentação
 
@@ -85,9 +86,9 @@ Documentos iniciais:
 ## Execução local
 
 Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
-Pydantic v2, repositories iniciais e services para CRUD interno. Ainda não há
-endpoints de domínio, autenticação, CRUD exposto por API, testes automatizados,
-Docker ou CI/CD.
+Pydantic v2, repositories iniciais, services para CRUD interno e endpoints CRUD
+REST para as entidades base. Ainda não há autenticação, autorização, testes
+automatizados, Docker ou CI/CD.
 
 Para preparar o ambiente local:
 
@@ -123,11 +124,19 @@ Para iniciar a API:
 uvicorn app.main:app --reload
 ```
 
-Endpoint disponível nesta fase:
+Endpoints disponíveis nesta fase:
 
 - `GET /api/v1/health`
+- CRUD de `roles` em `/api/v1/roles`
+- CRUD de `users` em `/api/v1/users`
+- CRUD de `customers` em `/api/v1/customers`
+- CRUD de `ticket-statuses` em `/api/v1/ticket-statuses`
+- CRUD de `ticket-priorities` em `/api/v1/ticket-priorities`
+- CRUD de `ticket-categories` em `/api/v1/ticket-categories`
+- CRUD de `tickets` em `/api/v1/tickets`
+- CRUD de `ticket-comments` em `/api/v1/ticket-comments`
 
-O health check não consulta o banco de dados nesta fase.
+O health check não consulta o banco de dados.
 
 ## Banco de dados
 
@@ -135,7 +144,8 @@ A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 
 - `DATABASE_URL` configurado via ambiente;
 - base declarativa em `app/db/base.py`;
-- engine e sessionmaker em `app/db/session.py`;
+- engine, sessionmaker e ciclo transacional por requisição em
+  `app/db/session.py`;
 - configuração inicial do Alembic em `alembic/`;
 - models iniciais em `app/models/`;
 - repositories iniciais em `app/repositories/`;

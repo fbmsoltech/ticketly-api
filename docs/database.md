@@ -1,22 +1,23 @@
 # Banco de dados
 
-## Objetivo da Fase 4
+## Objetivo
 
-A Fase 4 adiciona os models iniciais de domínio do Ticketly API e a primeira
-database migration real.
+O Ticketly API usa PostgreSQL como banco relacional planejado, SQLAlchemy 2.x
+para mapeamento e sessões, e Alembic para versionamento de schema.
 
-Esta fase mantém a infraestrutura criada anteriormente e adiciona:
+As fases iniciais adicionaram:
 
 - PostgreSQL como banco planejado;
-- SQLAlchemy 2.x para engine, sessões e mapeamento futuro;
+- SQLAlchemy 2.x para engine, sessões e mapeamento;
 - Alembic para migrations;
 - `DATABASE_URL` como variável de ambiente;
 - base declarativa para models;
 - models iniciais em `app/models/`;
 - migration para criação das tabelas do domínio.
 
-Esta fase não cria CRUD, endpoints de domínio, schemas, repositories, services,
-autenticação, Docker, testes ou CI/CD.
+Na Fase 7, os endpoints CRUD passam a usar a infraestrutura de banco por meio de
+services e repositories. Autenticação, Docker, testes e CI/CD ainda não fazem
+parte do escopo atual.
 
 ## Atualização da Fase 5
 
@@ -76,7 +77,8 @@ usuário, senha, host, porta e banco reais do ambiente local.
 ## Arquivos criados
 
 - `app/db/base.py`: define a base declarativa `Base`.
-- `app/db/session.py`: define `engine`, `SessionLocal` e `get_db_session`.
+- `app/db/session.py`: define `engine`, `SessionLocal`, `get_db_session` e o
+  ciclo transacional por requisição.
 - `app/models/`: define os models iniciais de domínio.
 - `alembic.ini`: configura o Alembic.
 - `alembic/env.py`: conecta Alembic às settings e à metadata do SQLAlchemy.
@@ -121,9 +123,10 @@ geradas a partir da metadata do SQLAlchemy:
 alembic revision --autogenerate -m "describe change"
 ```
 
-## Limites da fase
+## Limites atuais
 
-O endpoint `GET /api/v1/health` não consulta o banco de dados nesta fase.
+O endpoint `GET /api/v1/health` não consulta o banco de dados.
 
-O acesso ao banco por rotas deverá acontecer apenas em fases futuras, com
-separação adequada entre routes, services e repositories.
+Na Fase 7, rotas CRUD recebem services por dependência. A sessão SQLAlchemy é
+injetada no service por meio dos repositories, confirma a transação ao final de
+requisições bem-sucedidas e executa rollback quando ocorre exceção.
