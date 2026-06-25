@@ -6,7 +6,7 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 4 concluída - models iniciais de domínio e primeira migration real.
+> Status: Fase 5 concluída - schemas Pydantic v2 e repositories iniciais.
 
 ## Stack planejada
 
@@ -61,12 +61,13 @@ evitando implementar funcionalidades antes do momento planejado.
 - Fase 3: infraestrutura inicial de banco com PostgreSQL, SQLAlchemy 2.x e
   Alembic.
 - Fase 4: modelagem inicial das entidades.
-- Fase 5: CRUDs principais.
-- Fase 6: autenticação e autorização.
-- Fase 7: testes automatizados.
-- Fase 8: Docker e Docker Compose.
-- Fase 9: CI/CD com GitHub Actions.
-- Fase 10: deploy no Render.
+- Fase 5: schemas Pydantic v2 e repositories iniciais.
+- Fase 6: CRUDs principais.
+- Fase 7: autenticação e autorização.
+- Fase 8: testes automatizados.
+- Fase 9: Docker e Docker Compose.
+- Fase 10: CI/CD com GitHub Actions.
+- Fase 11: deploy no Render.
 
 ## Documentação
 
@@ -78,12 +79,14 @@ Documentos iniciais:
 - `docs/business-flow.md`
 - `docs/database.md`
 - `docs/development-guidelines.md`
+- `docs/schemas-and-repositories.md`
 
 ## Execução local
 
-Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio. Ainda não há
-autenticação, CRUD, schemas de domínio, repositories, services, testes
-automatizados, Docker ou CI/CD.
+Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
+Pydantic v2 e repositories iniciais. Ainda não há endpoints de domínio,
+services, autenticação, CRUD exposto por API, testes automatizados, Docker ou
+CI/CD.
 
 Para preparar o ambiente local:
 
@@ -134,6 +137,8 @@ A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 - engine e sessionmaker em `app/db/session.py`;
 - configuração inicial do Alembic em `alembic/`;
 - models iniciais em `app/models/`;
+- repositories iniciais em `app/repositories/`;
+- schemas Pydantic v2 em `app/schemas/`;
 - migration real em `alembic/versions/0002_initial_domain_models.py`.
 
 Para validar a configuração do Alembic sem aplicar mudanças:

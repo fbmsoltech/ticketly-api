@@ -18,6 +18,15 @@ Esta fase mantém a infraestrutura criada anteriormente e adiciona:
 Esta fase não cria CRUD, endpoints de domínio, schemas, repositories, services,
 autenticação, Docker, testes ou CI/CD.
 
+## Atualização da Fase 5
+
+A Fase 5 adiciona repositories iniciais em `app/repositories/` para encapsular
+consultas e operações básicas de persistência com SQLAlchemy.
+
+Esta fase não altera o schema do banco de dados e não cria novas migrations. A
+estrutura relacional continua sendo definida pelos models da Fase 4 e pela
+migration `0002_initial_domain_models.py`.
+
 ## Variável de ambiente
 
 A aplicação espera a variável `DATABASE_URL` no formato abaixo:

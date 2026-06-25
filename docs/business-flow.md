@@ -141,3 +141,15 @@ A Fase 4 cria a representação persistida inicial das entidades previstas:
 Essa modelagem registra apenas a estrutura relacional inicial. Regras como
 transições de status, permissões, atribuição de atendentes e validação de acesso
 serão implementadas em services nas fases futuras.
+
+## Contratos e persistência da Fase 5
+
+A Fase 5 adiciona schemas e repositories iniciais para preparar a evolução do
+domínio sem expor novos fluxos por HTTP.
+
+Os schemas representam dados de entrada e saída para uso futuro pela API. Os
+repositories encapsulam consultas e operações de persistência para que services
+futuros possam coordenar regras de negócio.
+
+Esta fase ainda não define regras de transição de status, permissões, atribuição
+de atendentes, autenticação ou autorização.

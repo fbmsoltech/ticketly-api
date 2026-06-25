@@ -125,6 +125,24 @@ Na Fase 4, ainda não devem ser criados:
 - testes automatizados;
 - GitHub Actions.
 
+Na Fase 5, o escopo permitido é:
+
+- criar schemas Pydantic v2 para as entidades iniciais;
+- criar repositories iniciais para acesso ao banco;
+- documentar as responsabilidades de schemas e repositories.
+
+Na Fase 5, ainda não devem ser criados:
+
+- endpoints de domínio;
+- services;
+- autenticação;
+- autorização;
+- CRUD exposto por API;
+- Docker;
+- Docker Compose;
+- testes automatizados;
+- GitHub Actions.
+
 ## Ferramentas de qualidade
 
 As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.
@@ -171,6 +189,8 @@ Atualizações esperadas:
 - mudanças de banco devem atualizar `docs/database.md`;
 - mudanças no processo de desenvolvimento devem atualizar
   `docs/development-guidelines.md`;
+- mudanças em schemas e repositories devem atualizar
+  `docs/schemas-and-repositories.md`;
 - mudanças relevantes para agentes devem atualizar `AGENTS.md`;
 - mudanças de visão geral, execução ou status devem atualizar `README.md`.
 
