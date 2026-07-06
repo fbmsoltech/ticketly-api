@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from os import getenv
 
 import pytest
 from fastapi.testclient import TestClient
@@ -15,11 +16,17 @@ from app.main import create_app
 
 @pytest.fixture
 def engine() -> Generator[Engine]:
-    test_engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    test_database_url = getenv("TEST_DATABASE_URL")
+    if test_database_url is None:
+        test_engine = create_engine(
+            "sqlite://",
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
+    else:
+        test_engine = create_engine(test_database_url, pool_pre_ping=True)
+
+    Base.metadata.drop_all(bind=test_engine)
     Base.metadata.create_all(bind=test_engine)
     try:
         yield test_engine

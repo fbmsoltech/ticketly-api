@@ -1,18 +1,14 @@
 # Schemas e repositories
 
-## Objetivo da Fase 5
+## Objetivo
 
-A Fase 5 adiciona as primeiras camadas de schemas Pydantic v2 e repositories da
-Ticketly API.
-
-Esta fase cria contratos de dados e adaptadores de persistência, mas ainda não
-cria endpoints de domínio, services, autenticação, autorização, testes
-automatizados, Docker ou CI/CD.
+Schemas Pydantic v2 e repositories compõem as camadas de contrato de dados e
+persistência da Ticketly API.
 
 ## Schemas
 
 Os schemas ficam em `app/schemas/` e representam contratos de entrada e saída
-para uso futuro pela camada HTTP.
+para uso pela camada HTTP.
 
 Responsabilidades:
 
@@ -26,13 +22,13 @@ Limites:
 - schemas não substituem models de banco;
 - schemas não devem acessar banco de dados;
 - schemas não devem conter regra de negócio complexa;
-- validações de domínio, permissões e fluxos devem ficar em services futuros.
+- validações de domínio, permissões e fluxos devem ficar em services.
 
 Padrão criado:
 
 - `*Create`: dados esperados para criação;
-- `*Update`: campos opcionais para atualização parcial futura;
-- `*Read`: dados esperados em respostas futuras.
+- `*Update`: campos opcionais para atualização parcial;
+- `*Read`: dados esperados em respostas.
 
 Os schemas de leitura não expõem campos internos sensíveis, como
 `hashed_password`.
@@ -55,12 +51,11 @@ Limites:
 - repositories não decidem fluxo de caso de uso;
 - repositories não aplicam regra de negócio;
 - repositories não validam permissões;
-- repositories não devem ser chamados diretamente por rotas futuras.
+- repositories não devem ser chamados diretamente por rotas.
 
-A transação deverá ser coordenada por services ou pela camada de aplicação em
-fases futuras.
+A transação é coordenada pela camada de aplicação.
 
-## Fluxo esperado futuro
+## Fluxo esperado
 
 ```text
 API route
@@ -76,5 +71,4 @@ Model SQLAlchemy
 Banco de dados
 ```
 
-Nesta fase o fluxo ainda não está exposto por endpoints de domínio. As camadas
-foram preparadas para uso incremental nas próximas fases.
+Esse fluxo é usado pelos endpoints CRUD das entidades base.

@@ -5,7 +5,7 @@
 O Ticketly API usa PostgreSQL como banco relacional planejado, SQLAlchemy 2.x
 para mapeamento e sessões, e Alembic para versionamento de schema.
 
-As fases iniciais adicionaram:
+O projeto inclui:
 
 - PostgreSQL como banco planejado;
 - SQLAlchemy 2.x para engine, sessões e mapeamento;
@@ -15,18 +15,9 @@ As fases iniciais adicionaram:
 - models iniciais em `app/models/`;
 - migration para criação das tabelas do domínio.
 
-Na Fase 7, os endpoints CRUD passam a usar a infraestrutura de banco por meio de
-services e repositories. Autenticação, Docker, testes e CI/CD ainda não fazem
-parte do escopo atual.
-
-## Atualização da Fase 5
-
-A Fase 5 adiciona repositories iniciais em `app/repositories/` para encapsular
-consultas e operações básicas de persistência com SQLAlchemy.
-
-Esta fase não altera o schema do banco de dados e não cria novas migrations. A
-estrutura relacional continua sendo definida pelos models da Fase 4 e pela
-migration `0002_initial_domain_models.py`.
+Os endpoints CRUD usam a infraestrutura de banco por meio de services e
+repositories. O ambiente local com Docker Compose fornece um banco principal e
+um banco separado para testes.
 
 ## Variável de ambiente
 
@@ -38,6 +29,50 @@ DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/tic
 
 O arquivo `.env.example` contém os valores de referência para desenvolvimento
 local.
+
+No Docker Compose, a aplicação acessa os bancos pelos nomes dos serviços:
+
+```env
+DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@db:5432/ticketly_db
+TEST_DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@test-db:5432/ticketly_test_db
+```
+
+Ao conectar a partir da máquina host, use as portas publicadas pelo Compose:
+
+```env
+DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_db
+TEST_DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@localhost:5433/ticketly_test_db
+```
+
+## Ambiente com Docker Compose
+
+Para subir a API e os bancos locais:
+
+```bash
+docker compose up --build
+```
+
+O serviço `api` aplica as migrations com `alembic upgrade head` antes de iniciar
+o Uvicorn.
+
+Serviços disponíveis:
+
+- `api`: aplicação FastAPI exposta em `localhost:8000`;
+- `db`: PostgreSQL principal exposto em `localhost:5432`;
+- `test-db`: PostgreSQL de testes exposto em `localhost:5433`;
+- `test`: execução de `pytest` usando o banco `test-db`.
+
+Para executar a suíte de testes no banco PostgreSQL de testes:
+
+```bash
+docker compose --profile test run --rm test
+```
+
+Para remover containers, rede e volumes dos bancos locais:
+
+```bash
+docker compose down -v
+```
 
 ## Preparação local do PostgreSQL
 
@@ -116,8 +151,8 @@ alembic upgrade head
 alembic downgrade -1
 ```
 
-Quando os models forem alterados em fases futuras, novas migrations deverão ser
-geradas a partir da metadata do SQLAlchemy:
+Quando os models forem alterados, novas migrations deverão ser geradas a partir
+da metadata do SQLAlchemy:
 
 ```bash
 alembic revision --autogenerate -m "describe change"
@@ -127,6 +162,6 @@ alembic revision --autogenerate -m "describe change"
 
 O endpoint `GET /api/v1/health` não consulta o banco de dados.
 
-Na Fase 7, rotas CRUD recebem services por dependência. A sessão SQLAlchemy é
-injetada no service por meio dos repositories, confirma a transação ao final de
-requisições bem-sucedidas e executa rollback quando ocorre exceção.
+Rotas CRUD recebem services por dependência. A sessão SQLAlchemy é injetada no
+service por meio dos repositories, confirma a transação ao final de requisições
+bem-sucedidas e executa rollback quando ocorre exceção.

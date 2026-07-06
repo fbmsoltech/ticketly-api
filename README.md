@@ -6,8 +6,8 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 8 concluída - testes automatizados para services e endpoints
-> CRUD das entidades base.
+> Status: API com CRUD das entidades base, testes automatizados e ambiente local
+> com Docker Compose.
 
 ## Stack planejada
 
@@ -51,25 +51,24 @@ O objetivo é demonstrar a construção incremental de uma API backend realista,
 seguindo boas práticas de arquitetura, qualidade, testes, documentação e
 entrega.
 
-O projeto deverá evoluir por fases, evitando misturar responsabilidades e
+O projeto deverá evoluir incrementalmente, evitando misturar responsabilidades e
 evitando implementar funcionalidades antes do momento planejado.
 
-## Roadmap inicial por fases
+## Roadmap
 
-- Fase 1: documentação base do projeto.
-- Fase 2: setup inicial Python/FastAPI, estrutura base da aplicação e
-  ferramentas de qualidade.
-- Fase 3: infraestrutura inicial de banco com PostgreSQL, SQLAlchemy 2.x e
-  Alembic.
-- Fase 4: modelagem inicial das entidades.
-- Fase 5: schemas Pydantic v2 e repositories iniciais.
-- Fase 6: services e CRUD interno das entidades base.
-- Fase 7: endpoints CRUD REST das entidades base.
-- Fase 8: testes automatizados.
-- Fase 9: autenticação e autorização.
-- Fase 10: Docker e Docker Compose.
-- Fase 11: CI/CD com GitHub Actions.
-- Fase 12: deploy no Render.
+- Documentação base do projeto.
+- Setup inicial Python/FastAPI, estrutura base da aplicação e ferramentas de
+  qualidade.
+- Infraestrutura inicial de banco com PostgreSQL, SQLAlchemy 2.x e Alembic.
+- Modelagem inicial das entidades.
+- Schemas Pydantic v2 e repositories iniciais.
+- Services e CRUD interno das entidades base.
+- Endpoints CRUD REST das entidades base.
+- Testes automatizados.
+- Docker e Docker Compose para desenvolvimento local.
+- Autenticação e autorização.
+- CI/CD com GitHub Actions.
+- Deploy no Render.
 
 ## Documentação
 
@@ -86,10 +85,49 @@ Documentos iniciais:
 
 ## Execução local
 
-Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
-Pydantic v2, repositories iniciais, services para CRUD interno, endpoints CRUD
-REST para as entidades base e testes automatizados com Pytest. Ainda não há
-autenticação, autorização, Docker ou CI/CD.
+O projeto usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
+Pydantic v2, repositories, services, endpoints CRUD REST para as entidades base,
+testes automatizados com Pytest e ambiente local com Docker Compose. Ainda não
+há autenticação, autorização ou CI/CD.
+
+Para subir o ambiente local completo com API, PostgreSQL principal e PostgreSQL
+para testes:
+
+```bash
+docker compose up --build
+```
+
+A API ficará disponível em:
+
+```text
+http://localhost:8000
+```
+
+O health check fica em:
+
+```text
+GET http://localhost:8000/api/v1/health
+```
+
+Para executar os testes usando o banco PostgreSQL de testes do Docker Compose:
+
+```bash
+docker compose --profile test run --rm test
+```
+
+Para parar os containers:
+
+```bash
+docker compose down
+```
+
+Para remover também os volumes locais dos bancos:
+
+```bash
+docker compose down -v
+```
+
+Também é possível executar a aplicação diretamente no ambiente Python local.
 
 Para preparar o ambiente local:
 
@@ -125,7 +163,7 @@ Para iniciar a API:
 uvicorn app.main:app --reload
 ```
 
-Endpoints disponíveis nesta fase:
+Endpoints disponíveis:
 
 - `GET /api/v1/health`
 - CRUD de `roles` em `/api/v1/roles`
@@ -153,6 +191,8 @@ A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 - schemas Pydantic v2 em `app/schemas/`;
 - services de CRUD interno em `app/services/`;
 - migration real em `alembic/versions/0002_initial_domain_models.py`.
+- Docker Compose com um banco principal em `db` e um banco isolado de testes em
+  `test-db`.
 
 Para validar a configuração do Alembic sem aplicar mudanças:
 

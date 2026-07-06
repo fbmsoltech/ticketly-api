@@ -40,13 +40,11 @@ Exemplos:
 
 ## Padrão de PRs
 
-Pull requests devem ser objetivos e relacionados a uma única fase ou mudança
-coesa.
+Pull requests devem ser objetivos e relacionados a uma mudança coesa.
 
 Um PR deve conter:
 
 - resumo da mudança;
-- fase relacionada;
 - arquivos ou áreas impactadas;
 - evidências de validação quando houver código;
 - observações sobre documentação atualizada.
@@ -54,148 +52,16 @@ Um PR deve conter:
 PRs não devem misturar documentação, infraestrutura, domínio e endpoints sem
 necessidade clara.
 
-## Regra de uma fase por vez
+## Regra de escopo incremental
 
 O projeto deve evoluir incrementalmente.
 
-Durante uma fase:
+Durante uma entrega:
 
 - implementar apenas o que pertence ao escopo atual;
 - evitar antecipar funcionalidades;
-- não criar arquivos ou estruturas de fases futuras sem solicitação explícita;
+- não criar arquivos ou estruturas futuras sem solicitação explícita;
 - manter o repositório simples e coerente com o estágio atual.
-
-Na Fase 1, apenas documentação e guias iniciais devem ser criados.
-
-Na Fase 2, o escopo permitido foi:
-
-- criar o setup inicial Python 3.13+;
-- configurar FastAPI, Uvicorn e Pydantic Settings;
-- criar a estrutura inicial `app/`;
-- criar o endpoint simples `GET /api/v1/health`;
-- configurar Ruff, Black e Mypy;
-- atualizar a documentação relacionada.
-
-Na Fase 3, o escopo permitido é:
-
-- adicionar PostgreSQL como banco relacional planejado;
-- adicionar SQLAlchemy 2.x;
-- adicionar Alembic;
-- adicionar `psycopg[binary]`;
-- configurar `DATABASE_URL`;
-- criar `app/db/base.py`;
-- criar `app/db/session.py`;
-- criar a estrutura inicial de migrations;
-- documentar a configuração de banco.
-
-Na Fase 3, ainda não devem ser criados:
-
-- CRUD;
-- endpoints de domínio;
-- models de domínio;
-- schemas Pydantic de domínio;
-- repositories;
-- services;
-- autenticação;
-- autorização;
-- Docker;
-- Docker Compose;
-- testes automatizados;
-- GitHub Actions.
-
-Na Fase 4, o escopo permitido é:
-
-- criar models iniciais de domínio com SQLAlchemy 2.x;
-- mapear entidades e relacionamentos previstos;
-- configurar o Alembic para carregar a metadata dos models;
-- criar a primeira migration real do banco de dados;
-- atualizar a documentação relacionada.
-
-Na Fase 4, ainda não devem ser criados:
-
-- CRUD;
-- endpoints de domínio;
-- schemas Pydantic de domínio;
-- repositories;
-- services;
-- autenticação;
-- autorização;
-- Docker;
-- Docker Compose;
-- testes automatizados;
-- GitHub Actions.
-
-Na Fase 5, o escopo permitido é:
-
-- criar schemas Pydantic v2 para as entidades iniciais;
-- criar repositories iniciais para acesso ao banco;
-- documentar as responsabilidades de schemas e repositories.
-
-Na Fase 5, ainda não devem ser criados:
-
-- endpoints de domínio;
-- services;
-- autenticação;
-- autorização;
-- CRUD exposto por API;
-- Docker;
-- Docker Compose;
-- testes automatizados;
-- GitHub Actions.
-
-Na Fase 6, o escopo permitido é:
-
-- criar services para as entidades base;
-- implementar CRUD interno por meio de services;
-- reutilizar schemas Pydantic v2 e repositories existentes;
-- manter transações sem commit automático nos repositories;
-- documentar as responsabilidades da camada de services.
-
-Na Fase 6, ainda não devem ser criados:
-
-- endpoints de domínio;
-- autenticação;
-- autorização;
-- CRUD exposto por API;
-- Docker;
-- Docker Compose;
-- testes automatizados;
-- GitHub Actions.
-
-Na Fase 7, o escopo permitido é:
-
-- criar endpoints CRUD REST para as entidades base já cobertas por services;
-- manter rotas finas, sem regra de negócio;
-- usar schemas Pydantic v2 como contratos de entrada e saída;
-- usar services como ponto de entrada da aplicação;
-- injetar services por dependências da API;
-- documentar os endpoints expostos e o ciclo transacional por requisição.
-
-Na Fase 7, ainda não devem ser criados:
-
-- autenticação;
-- autorização;
-- Docker;
-- Docker Compose;
-- testes automatizados;
-- GitHub Actions.
-
-Na Fase 8, o escopo permitido é:
-
-- adicionar testes automatizados com Pytest;
-- testar services das entidades base;
-- testar endpoints CRUD das entidades base;
-- usar banco isolado de teste, sem depender do banco de produção ou do banco
-  local principal;
-- documentar comandos de execução dos testes.
-
-Na Fase 8, ainda não devem ser criados:
-
-- autenticação;
-- autorização;
-- Docker;
-- Docker Compose;
-- GitHub Actions.
 
 ## Ferramentas de qualidade
 
@@ -278,6 +144,12 @@ Comando recomendado:
 pytest
 ```
 
+Para executar os testes no PostgreSQL de testes gerenciado pelo Docker Compose:
+
+```bash
+docker compose --profile test run --rm test
+```
+
 Os testes devem seguir as práticas abaixo:
 
 - usar Pytest;
@@ -287,6 +159,27 @@ Os testes devem seguir as práticas abaixo:
 - manter testes automatizados no CI;
 - escrever testes legíveis e focados em comportamento;
 - cobrir fluxos de sucesso e falha quando fizer sentido.
+
+## Docker Compose
+
+O ambiente local containerizado contém:
+
+- `api`: aplicação FastAPI;
+- `db`: PostgreSQL principal;
+- `test-db`: PostgreSQL isolado para testes;
+- `test`: serviço sob profile `test` para executar `pytest`.
+
+Comandos úteis:
+
+```bash
+docker compose up --build
+docker compose --profile test run --rm test
+docker compose down
+docker compose down -v
+```
+
+O arquivo `AGENTS.md` deve permanecer fora do Git e fora do contexto de build da
+imagem Docker.
 
 ## Boas práticas de revisão
 

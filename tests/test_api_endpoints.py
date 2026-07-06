@@ -88,7 +88,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         json={"name": "AGENT", "description": "Support agents"},
     ).json()
 
-    user_id = _assert_crud_contract(
+    _assert_crud_contract(
         client,
         path="/api/v1/users",
         create_payload={
@@ -102,6 +102,17 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         updated_field="name",
         updated_value="Jane Support",
     )
+
+    assignee = client.post(
+        "/api/v1/users",
+        json={
+            "role_id": role["id"],
+            "name": "Ticket Assignee",
+            "email": "ticket-assignee@example.com",
+            "password": "secret123",
+            "is_active": True,
+        },
+    ).json()
 
     customer_user = client.post(
         "/api/v1/users",
@@ -158,7 +169,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         path="/api/v1/tickets",
         create_payload={
             "customer_id": ticket_customer["id"],
-            "assignee_id": user_id,
+            "assignee_id": assignee["id"],
             "category_id": category["id"],
             "status_id": status["id"],
             "priority_id": priority["id"],
@@ -174,7 +185,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         "/api/v1/tickets",
         json={
             "customer_id": ticket_customer["id"],
-            "assignee_id": user_id,
+            "assignee_id": assignee["id"],
             "category_id": category["id"],
             "status_id": status["id"],
             "priority_id": priority["id"],
@@ -187,7 +198,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         path="/api/v1/ticket-comments",
         create_payload={
             "ticket_id": comment_ticket["id"],
-            "author_id": user_id,
+            "author_id": assignee["id"],
             "body": "We are checking this.",
             "is_internal": False,
         },
