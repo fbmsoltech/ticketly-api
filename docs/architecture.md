@@ -16,7 +16,8 @@ negócio e persistência de dados.
 A aplicação expõe endpoints CRUD REST para as entidades base já cobertas por
 schemas, repositories e services, mantendo rotas finas e delegando operações de
 aplicação para services. O ambiente local usa Docker Compose para executar a API
-e bancos PostgreSQL separados para desenvolvimento e testes.
+e bancos PostgreSQL separados para desenvolvimento e testes. A qualidade do
+projeto é validada por uma pipeline de CI no GitHub Actions.
 
 Estrutura atual relevante:
 
@@ -92,6 +93,9 @@ alembic/
 `-- script.py.mako
 docker-compose.yml
 Dockerfile
+.github/
+`-- workflows/
+    `-- ci.yml
 ```
 
 Responsabilidades atuais:
@@ -117,6 +121,8 @@ Responsabilidades atuais:
 - `Dockerfile`: define a imagem local da API.
 - `docker-compose.yml`: orquestra a API, o PostgreSQL principal e o PostgreSQL
   de testes.
+- `.github/workflows/ci.yml`: valida qualidade, migrations e testes no GitHub
+  Actions.
 
 O endpoint de health check não consulta banco de dados nem qualquer dependência
 externa.
@@ -125,7 +131,22 @@ Ainda não fazem parte do projeto:
 
 - autenticação;
 - autorização;
-- GitHub Actions.
+- deploy;
+- entrega contínua.
+
+## Integração contínua
+
+A pipeline de CI executa fora da aplicação, sem alterar as responsabilidades das
+camadas internas.
+
+Ela valida:
+
+- qualidade estática com Ruff, Black e Mypy;
+- aplicação das migrations com Alembic;
+- comportamento automatizado com Pytest.
+
+O workflow usa um PostgreSQL temporário do GitHub Actions para validar
+migrations e testes sem depender de banco de produção.
 
 ## Separaçao de responsabilidades
 
