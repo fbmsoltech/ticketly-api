@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db_session
 from app.repositories.customer import CustomerRepository
 from app.repositories.role import RoleRepository
-from app.repositories.ticket import TicketRepository
 from app.repositories.ticket_category import TicketCategoryRepository
 from app.repositories.ticket_comment import TicketCommentRepository
 from app.repositories.ticket_priority import TicketPriorityRepository
@@ -14,10 +13,10 @@ from app.repositories.ticket_status import TicketStatusRepository
 from app.services.auth_service import AuthService
 from app.services.customer import CustomerService
 from app.services.role import RoleService
-from app.services.ticket import TicketService
 from app.services.ticket_category import TicketCategoryService
 from app.services.ticket_comment import TicketCommentService
 from app.services.ticket_priority import TicketPriorityService
+from app.services.ticket_service import TicketService
 from app.services.ticket_status import TicketStatusService
 from app.services.user import UserService
 
@@ -55,7 +54,7 @@ def get_ticket_category_service(db: DatabaseSession) -> TicketCategoryService:
 
 
 def get_ticket_service(db: DatabaseSession) -> TicketService:
-    return TicketService(TicketRepository(db))
+    return TicketService(db)
 
 
 def get_ticket_comment_service(db: DatabaseSession) -> TicketCommentService:

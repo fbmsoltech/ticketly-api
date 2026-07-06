@@ -10,6 +10,10 @@ class ResourceAlreadyExistsError(ApplicationError):
     """Raised when a resource conflicts with an existing one."""
 
 
+class InvalidOperationError(ApplicationError):
+    """Raised when a domain operation violates business rules."""
+
+
 class AuthenticationError(ApplicationError):
     """Raised when authentication fails."""
 

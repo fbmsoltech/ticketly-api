@@ -6,9 +6,9 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: API com CRUD das entidades base, autenticacao JWT, autorizacao por
-> papeis, testes automatizados, ambiente local com Docker Compose e CI com
-> GitHub Actions.
+> Status: API com CRUD das entidades base, CRUD de tickets com regras de
+> negocio, autenticacao JWT, autorizacao por papeis, testes automatizados,
+> ambiente local com Docker Compose e CI com GitHub Actions.
 
 ## Stack planejada
 
@@ -86,6 +86,7 @@ Documentos iniciais:
 - `docs/development-guidelines.md`
 - `docs/testing.md`
 - `docs/ci.md`
+- `docs/tickets.md`
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
 
@@ -118,6 +119,9 @@ GET http://localhost:8000/api/v1/health
 Para executar os testes usando o banco PostgreSQL de testes do Docker Compose:
 
 ```bash
+docker compose exec api pytest -m unit
+docker compose exec api pytest -m integration
+docker compose exec api pytest
 docker compose --profile test run --rm test
 ```
 
@@ -211,6 +215,7 @@ Rotas protegidas:
 - `/api/v1/ticket-statuses`: somente `ADMIN`;
 - `/api/v1/ticket-priorities`: somente `ADMIN`;
 - `/api/v1/customers`: `ADMIN` ou `AGENT`.
+- `/api/v1/tickets`: `ADMIN` ou `AGENT`, exceto `DELETE`, que exige `ADMIN`.
 
 O health check e `/api/v1/auth/login` sao publicos.
 
@@ -249,6 +254,31 @@ No Swagger, clique em Authorize e informe:
 ```text
 Bearer <TOKEN>
 ```
+
+## Tickets
+
+O CRUD de tickets fica em `/api/v1/tickets` e exige Bearer Token.
+
+Exemplo de criacao:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/tickets \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Cannot access dashboard",
+    "description": "The dashboard returns an error.",
+    "customer_id": 1,
+    "category_id": 1,
+    "status_id": 1,
+    "priority_id": 1,
+    "assigned_agent_id": 2
+  }'
+```
+
+`assigned_agent_id` e opcional. Quando informado, deve apontar para usuario com
+papel `ADMIN` ou `AGENT`. A abertura direta por cliente autenticado sera tratada
+separadamente; neste momento o CRUD de tickets e administrativo/de atendimento.
 
 ## Banco de dados
 
@@ -295,9 +325,16 @@ Comandos recomendados:
 ```bash
 ruff check .
 black --check .
-mypy .
+mypy app tests
+pytest -m unit
+pytest -m integration
 pytest
 ```
+
+Testes unitarios ficam em `tests/unit`, usam o marker `unit` e nao dependem de
+banco ou infraestrutura externa. Testes de integracao ficam em
+`tests/integration`, usam o marker `integration` e validam API, services,
+repositories e PostgreSQL de teste.
 
 ## CI
 
@@ -309,8 +346,9 @@ PostgreSQL temporário para validar:
 - Ruff;
 - Black;
 - Mypy;
+- testes unitarios;
 - migrations com Alembic;
-- testes com Pytest.
+- testes de integracao.
 
 O workflow não realiza deploy, publicação de imagens Docker ou uso de secrets
 reais.

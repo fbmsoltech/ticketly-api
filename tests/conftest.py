@@ -13,9 +13,22 @@ from app.core.security import create_access_token
 from app.db.base import Base
 from app.db.session import get_db_session
 from app.main import create_app
+from app.models.customer import Customer
 from app.models.role import Role
+from app.models.ticket import Ticket
+from app.models.ticket_category import TicketCategory
+from app.models.ticket_priority import TicketPriority
+from app.models.ticket_status import TicketStatus
 from app.models.user import User
-from tests.factories import create_role, create_user
+from tests.factories import (
+    create_customer,
+    create_role,
+    create_ticket,
+    create_ticket_category,
+    create_ticket_priority,
+    create_ticket_status,
+    create_user,
+)
 
 
 @pytest.fixture
@@ -112,6 +125,59 @@ def agent_user(db_session: Session, agent_role: Role) -> User:
 
 
 @pytest.fixture
+def customer_user(db_session: Session, customer_role: Role) -> User:
+    return create_user(
+        db_session,
+        role=customer_role,
+        name="Customer User",
+        email="customer-auth@example.com",
+        password="customer123",
+    )
+
+
+@pytest.fixture
+def customer(db_session: Session, customer_user: User) -> Customer:
+    return create_customer(db_session, user=customer_user)
+
+
+@pytest.fixture
+def ticket_category(db_session: Session) -> TicketCategory:
+    return create_ticket_category(db_session, name="Technical Support")
+
+
+@pytest.fixture
+def ticket_status(db_session: Session) -> TicketStatus:
+    return create_ticket_status(db_session, name="Open", sort_order=1)
+
+
+@pytest.fixture
+def second_ticket_status(db_session: Session) -> TicketStatus:
+    return create_ticket_status(db_session, name="In Progress", sort_order=2)
+
+
+@pytest.fixture
+def ticket_priority(db_session: Session) -> TicketPriority:
+    return create_ticket_priority(db_session, name="High", sort_order=1)
+
+
+@pytest.fixture
+def ticket(
+    db_session: Session,
+    customer: Customer,
+    ticket_category: TicketCategory,
+    ticket_status: TicketStatus,
+    ticket_priority: TicketPriority,
+) -> Ticket:
+    return create_ticket(
+        db_session,
+        customer=customer,
+        category=ticket_category,
+        status=ticket_status,
+        priority=ticket_priority,
+    )
+
+
+@pytest.fixture
 def admin_token(admin_user: User) -> str:
     return create_access_token(subject=str(admin_user.id))
 
@@ -122,6 +188,11 @@ def agent_token(agent_user: User) -> str:
 
 
 @pytest.fixture
+def customer_token(customer_user: User) -> str:
+    return create_access_token(subject=str(customer_user.id))
+
+
+@pytest.fixture
 def admin_auth_headers(admin_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {admin_token}"}
 
@@ -129,3 +200,8 @@ def admin_auth_headers(admin_token: str) -> dict[str, str]:
 @pytest.fixture
 def agent_auth_headers(agent_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {agent_token}"}
+
+
+@pytest.fixture
+def customer_auth_headers(customer_token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {customer_token}"}

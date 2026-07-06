@@ -1,6 +1,9 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.models.user import User
+
+pytestmark = pytest.mark.integration
 
 
 def test_login_returns_access_token(

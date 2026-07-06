@@ -7,6 +7,8 @@ from app.services.exceptions import ResourceAlreadyExistsError, ResourceNotFound
 from app.services.user import UserService
 from tests.factories import create_role, create_user
 
+pytestmark = pytest.mark.integration
+
 
 def test_create_user_hashes_password(db_session: Session) -> None:
     role = create_role(db_session)

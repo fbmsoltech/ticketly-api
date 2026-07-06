@@ -6,6 +6,8 @@ from app.services.auth_service import AuthService
 from app.services.exceptions import AuthenticationError
 from tests.factories import create_role, create_user
 
+pytestmark = pytest.mark.integration
+
 
 def test_authenticate_user_with_valid_credentials(db_session: Session) -> None:
     role = create_role(db_session)
