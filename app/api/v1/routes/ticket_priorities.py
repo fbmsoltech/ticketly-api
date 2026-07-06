@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_admin
 from app.api.v1.dependencies.services import get_ticket_priority_service
 from app.api.v1.routes.common import raise_not_found
 from app.models.ticket_priority import TicketPriority
@@ -13,7 +14,11 @@ from app.schemas.ticket_priority import (
 )
 from app.services.ticket_priority import TicketPriorityService
 
-router = APIRouter(prefix="/ticket-priorities", tags=["ticket-priorities"])
+router = APIRouter(
+    prefix="/ticket-priorities",
+    tags=["ticket-priorities"],
+    dependencies=[Depends(require_admin)],
+)
 
 TicketPriorityServiceDependency = Annotated[
     TicketPriorityService,

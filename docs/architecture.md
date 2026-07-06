@@ -308,3 +308,59 @@ ticketly-api/
 
 O nome da pasta raiz pode variar conforme o ambiente local. A organização
 interna deverá respeitar essa separação conforme as fases evoluírem.
+
+## Camada de seguranca
+
+A autenticacao e autorizacao ficam separadas entre core, services e dependencies
+HTTP.
+
+Componentes principais:
+
+- `app/core/security.py`: gera hash de senha, valida senha, cria JWT e decodifica
+  JWT sem importar FastAPI;
+- `app/services/auth_service.py`: autentica usuario por e-mail e senha, valida
+  usuario ativo e gera access token;
+- `app/services/user.py`: coordena CRUD de usuarios, valida role, valida e-mail
+  duplicado e salva apenas `hashed_password`;
+- `app/api/v1/dependencies/auth.py`: converte Bearer Token em usuario atual e
+  aplica autorizacao por papel;
+- `app/api/v1/routes/auth.py`: expoe login e usuario atual;
+- `app/api/v1/routes/users.py`: expoe CRUD de usuarios protegido por `ADMIN`.
+
+Fluxo de autenticacao:
+
+```text
+Cliente
+  |
+POST /api/v1/auth/login
+  |
+AuthService.authenticate
+  |
+UserRepository.get_by_email
+  |
+verify_password
+  |
+create_access_token
+  |
+TokenResponse
+```
+
+Fluxo de autorizacao:
+
+```text
+Cliente com Bearer Token
+  |
+Dependency get_current_user
+  |
+decode_access_token
+  |
+UserRepository.get
+  |
+require_roles
+  |
+Endpoint protegido
+```
+
+As rotas continuam finas: elas recebem entrada HTTP, aplicam dependencies,
+chamam services e retornam schemas publicos. Regras de negocio de autenticacao e
+usuarios ficam nos services.

@@ -9,9 +9,13 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 import app.models  # noqa: F401
+from app.core.security import create_access_token
 from app.db.base import Base
 from app.db.session import get_db_session
 from app.main import create_app
+from app.models.role import Role
+from app.models.user import User
+from tests.factories import create_role, create_user
 
 
 @pytest.fixture
@@ -68,3 +72,60 @@ def client(db_session: Session) -> Generator[TestClient]:
         yield test_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def admin_role(db_session: Session) -> Role:
+    return create_role(db_session, name="ADMIN")
+
+
+@pytest.fixture
+def agent_role(db_session: Session) -> Role:
+    return create_role(db_session, name="AGENT")
+
+
+@pytest.fixture
+def customer_role(db_session: Session) -> Role:
+    return create_role(db_session, name="CUSTOMER")
+
+
+@pytest.fixture
+def admin_user(db_session: Session, admin_role: Role) -> User:
+    return create_user(
+        db_session,
+        role=admin_role,
+        name="Admin User",
+        email="admin@example.com",
+        password="admin123",
+    )
+
+
+@pytest.fixture
+def agent_user(db_session: Session, agent_role: Role) -> User:
+    return create_user(
+        db_session,
+        role=agent_role,
+        name="Agent User",
+        email="agent-auth@example.com",
+        password="agent123",
+    )
+
+
+@pytest.fixture
+def admin_token(admin_user: User) -> str:
+    return create_access_token(subject=str(admin_user.id))
+
+
+@pytest.fixture
+def agent_token(agent_user: User) -> str:
+    return create_access_token(subject=str(agent_user.id))
+
+
+@pytest.fixture
+def admin_auth_headers(admin_token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {admin_token}"}
+
+
+@pytest.fixture
+def agent_auth_headers(agent_token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {agent_token}"}

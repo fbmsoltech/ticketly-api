@@ -3,13 +3,18 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_admin
 from app.api.v1.dependencies.services import get_role_service
 from app.api.v1.routes.common import raise_not_found
 from app.models.role import Role
 from app.schemas.role import RoleCreate, RoleRead, RoleUpdate
 from app.services.role import RoleService
 
-router = APIRouter(prefix="/roles", tags=["roles"])
+router = APIRouter(
+    prefix="/roles",
+    tags=["roles"],
+    dependencies=[Depends(require_admin)],
+)
 
 RoleServiceDependency = Annotated[RoleService, Depends(get_role_service)]
 

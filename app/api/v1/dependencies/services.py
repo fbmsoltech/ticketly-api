@@ -1,4 +1,3 @@
-from hashlib import sha256
 from typing import Annotated
 
 from fastapi import Depends
@@ -12,7 +11,7 @@ from app.repositories.ticket_category import TicketCategoryRepository
 from app.repositories.ticket_comment import TicketCommentRepository
 from app.repositories.ticket_priority import TicketPriorityRepository
 from app.repositories.ticket_status import TicketStatusRepository
-from app.repositories.user import UserRepository
+from app.services.auth_service import AuthService
 from app.services.customer import CustomerService
 from app.services.role import RoleService
 from app.services.ticket import TicketService
@@ -25,10 +24,6 @@ from app.services.user import UserService
 DatabaseSession = Annotated[Session, Depends(get_db_session)]
 
 
-def _hash_password(password: str) -> str:
-    return sha256(password.encode("utf-8")).hexdigest()
-
-
 def get_role_service(db: DatabaseSession) -> RoleService:
     return RoleService(RoleRepository(db))
 
@@ -36,7 +31,11 @@ def get_role_service(db: DatabaseSession) -> RoleService:
 def get_user_service(
     db: DatabaseSession,
 ) -> UserService:
-    return UserService(UserRepository(db), _hash_password)
+    return UserService(db)
+
+
+def get_auth_service(db: DatabaseSession) -> AuthService:
+    return AuthService(db)
 
 
 def get_customer_service(db: DatabaseSession) -> CustomerService:

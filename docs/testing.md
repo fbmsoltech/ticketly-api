@@ -53,3 +53,27 @@ do CI durante a execução.
 - testes não devem usar banco de produção;
 - fixtures devem manter os cenários claros e isolados;
 - novas regras de negócio devem ser acompanhadas por testes automatizados.
+
+## Autenticacao nos testes
+
+As fixtures compartilhadas criam roles `ADMIN`, `AGENT` e `CUSTOMER`, usuarios
+admin e agent, tokens JWT e headers autorizados.
+
+Fixtures principais:
+
+- `admin_role`;
+- `agent_role`;
+- `customer_role`;
+- `admin_user`;
+- `agent_user`;
+- `admin_token`;
+- `agent_token`;
+- `admin_auth_headers`;
+- `agent_auth_headers`.
+
+Os testes de API devem validar explicitamente:
+
+- `401` para token ausente, token invalido ou credenciais invalidas;
+- `403` para usuario autenticado sem papel suficiente;
+- ausencia de `hashed_password` em respostas publicas;
+- acesso permitido quando o papel exigido esta presente.

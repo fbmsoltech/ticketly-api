@@ -3,13 +3,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_admin
 from app.api.v1.dependencies.services import get_user_service
-from app.api.v1.routes.common import raise_not_found
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.services.user import UserService
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+    dependencies=[Depends(require_admin)],
+)
 
 UserServiceDependency = Annotated[UserService, Depends(get_user_service)]
 
@@ -35,10 +39,7 @@ def create_user(data: UserCreate, service: UserServiceDependency) -> User:
 
 @router.get("/{user_id}", response_model=UserRead, summary="Busca um usuário")
 def get_user(user_id: int, service: UserServiceDependency) -> User:
-    user = service.get(user_id)
-    if user is None:
-        raise_not_found("User")
-    return user
+    return service.get_by_id(user_id)
 
 
 @router.patch("/{user_id}", response_model=UserRead, summary="Atualiza um usuário")
@@ -47,10 +48,7 @@ def update_user(
     data: UserUpdate,
     service: UserServiceDependency,
 ) -> User:
-    user = service.update(user_id, data)
-    if user is None:
-        raise_not_found("User")
-    return user
+    return service.update(user_id, data)
 
 
 @router.delete(
@@ -59,5 +57,4 @@ def update_user(
     summary="Remove um usuário",
 )
 def delete_user(user_id: int, service: UserServiceDependency) -> None:
-    if not service.delete(user_id):
-        raise_not_found("User")
+    service.delete(user_id)

@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_db"
     )
+    jwt_secret_key: str = "change-me-in-production-use-a-strong-secret-key"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
 
     model_config = SettingsConfigDict(
         env_file=".env",
