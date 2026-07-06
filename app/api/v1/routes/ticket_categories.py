@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_admin
 from app.api.v1.dependencies.services import get_ticket_category_service
 from app.api.v1.routes.common import raise_not_found
 from app.models.ticket_category import TicketCategory
@@ -13,7 +14,11 @@ from app.schemas.ticket_category import (
 )
 from app.services.ticket_category import TicketCategoryService
 
-router = APIRouter(prefix="/ticket-categories", tags=["ticket-categories"])
+router = APIRouter(
+    prefix="/ticket-categories",
+    tags=["ticket-categories"],
+    dependencies=[Depends(require_admin)],
+)
 
 TicketCategoryServiceDependency = Annotated[
     TicketCategoryService,

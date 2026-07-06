@@ -7,7 +7,6 @@ from app.repositories.ticket_category import TicketCategoryRepository
 from app.repositories.ticket_comment import TicketCommentRepository
 from app.repositories.ticket_priority import TicketPriorityRepository
 from app.repositories.ticket_status import TicketStatusRepository
-from app.repositories.user import UserRepository
 from app.schemas.role import RoleCreate, RoleUpdate
 from app.schemas.ticket_category import TicketCategoryCreate
 from app.schemas.ticket_comment import TicketCommentCreate
@@ -58,7 +57,7 @@ def test_user_service_hashes_password_on_create_and_update(
     db_session: Session,
 ) -> None:
     role = create_role(db_session)
-    service = UserService(UserRepository(db_session), lambda value: f"hashed:{value}")
+    service = UserService(db_session)
 
     user = service.create(
         UserCreate(
@@ -69,13 +68,14 @@ def test_user_service_hashes_password_on_create_and_update(
             is_active=True,
         ),
     )
-    assert user.hashed_password == "hashed:secret123"
+    assert user.hashed_password != "secret123"
     assert service.get_by_email("jane@example.com") == user
     assert service.list_by_role(role.id) == [user]
 
+    old_hash = user.hashed_password
     updated = service.update(user.id, UserUpdate(password="newsecret123"))
-    assert updated is not None
-    assert updated.hashed_password == "hashed:newsecret123"
+    assert updated.hashed_password != old_hash
+    assert updated.hashed_password != "newsecret123"
 
 
 def test_lookup_services_delegate_special_queries(db_session: Session) -> None:

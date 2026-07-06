@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_admin
 from app.api.v1.dependencies.services import get_ticket_status_service
 from app.api.v1.routes.common import raise_not_found
 from app.models.ticket_status import TicketStatus
@@ -13,7 +14,11 @@ from app.schemas.ticket_status import (
 )
 from app.services.ticket_status import TicketStatusService
 
-router = APIRouter(prefix="/ticket-statuses", tags=["ticket-statuses"])
+router = APIRouter(
+    prefix="/ticket-statuses",
+    tags=["ticket-statuses"],
+    dependencies=[Depends(require_admin)],
+)
 
 TicketStatusServiceDependency = Annotated[
     TicketStatusService,

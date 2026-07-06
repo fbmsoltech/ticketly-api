@@ -6,8 +6,9 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: API com CRUD das entidades base, testes automatizados, ambiente local
-> com Docker Compose e CI com GitHub Actions.
+> Status: API com CRUD das entidades base, autenticacao JWT, autorizacao por
+> papeis, testes automatizados, ambiente local com Docker Compose e CI com
+> GitHub Actions.
 
 ## Stack planejada
 
@@ -78,6 +79,8 @@ A documentação técnica e de negócio fica na pasta `docs/`.
 Documentos iniciais:
 
 - `docs/architecture.md`
+- `docs/authentication.md`
+- `docs/api-endpoints.md`
 - `docs/business-flow.md`
 - `docs/database.md`
 - `docs/development-guidelines.md`
@@ -88,10 +91,10 @@ Documentos iniciais:
 
 ## Execução local
 
-O projeto usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
+O projeto usa Python 3.13+ e inclui a modelagem inicial do dominio, schemas
 Pydantic v2, repositories, services, endpoints CRUD REST para as entidades base,
-testes automatizados com Pytest e ambiente local com Docker Compose. Ainda não
-há autenticação, autorização, CD ou deploy.
+autenticacao JWT, autorizacao por papeis, testes automatizados com Pytest e
+ambiente local com Docker Compose. Ainda nao ha CD ou deploy.
 
 Para subir o ambiente local completo com API, PostgreSQL principal e PostgreSQL
 para testes:
@@ -169,6 +172,8 @@ uvicorn app.main:app --reload
 Endpoints disponíveis:
 
 - `GET /api/v1/health`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
 - CRUD de `roles` em `/api/v1/roles`
 - CRUD de `users` em `/api/v1/users`
 - CRUD de `customers` em `/api/v1/customers`
@@ -179,6 +184,71 @@ Endpoints disponíveis:
 - CRUD de `ticket-comments` em `/api/v1/ticket-comments`
 
 O health check não consulta o banco de dados.
+
+## Autenticacao e autorizacao
+
+A API usa JWT com Bearer Token. Configure as variaveis abaixo no `.env`:
+
+```env
+JWT_SECRET_KEY=change-me-in-production
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+Use um segredo forte fora do ambiente local. Nunca versione secrets reais.
+
+Papeis existentes:
+
+- `ADMIN`
+- `AGENT`
+- `CUSTOMER`
+
+Rotas protegidas:
+
+- `/api/v1/roles`: somente `ADMIN`;
+- `/api/v1/users`: somente `ADMIN`;
+- `/api/v1/ticket-categories`: somente `ADMIN`;
+- `/api/v1/ticket-statuses`: somente `ADMIN`;
+- `/api/v1/ticket-priorities`: somente `ADMIN`;
+- `/api/v1/customers`: `ADMIN` ou `AGENT`.
+
+O health check e `/api/v1/auth/login` sao publicos.
+
+Como ainda nao existe seed automatico, para validacao manual pode ser necessario
+criar a role `ADMIN` diretamente no banco. Exemplo SQL:
+
+```sql
+INSERT INTO roles (name, description)
+VALUES ('ADMIN', 'Administrators');
+```
+
+Depois crie um usuario admin pelo endpoint de usuarios em um ambiente ja
+autorizado, ou insira manualmente um hash gerado pela aplicacao em ambiente de
+desenvolvimento.
+
+Login:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "admin123"
+  }'
+```
+
+Uso do token:
+
+```bash
+curl http://localhost:8000/api/v1/auth/me \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+No Swagger, clique em Authorize e informe:
+
+```text
+Bearer <TOKEN>
+```
 
 ## Banco de dados
 

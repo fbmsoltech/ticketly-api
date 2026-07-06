@@ -3,13 +3,18 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.api.v1.dependencies.auth import require_roles
 from app.api.v1.dependencies.services import get_customer_service
 from app.api.v1.routes.common import raise_not_found
 from app.models.customer import Customer
 from app.schemas.customer import CustomerCreate, CustomerRead, CustomerUpdate
 from app.services.customer import CustomerService
 
-router = APIRouter(prefix="/customers", tags=["customers"])
+router = APIRouter(
+    prefix="/customers",
+    tags=["customers"],
+    dependencies=[Depends(require_roles({"ADMIN", "AGENT"}))],
+)
 
 CustomerServiceDependency = Annotated[CustomerService, Depends(get_customer_service)]
 

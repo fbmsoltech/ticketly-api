@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.core.security import get_password_hash
 from app.models.customer import Customer
 from app.models.role import Role
 from app.models.ticket import Ticket
@@ -22,14 +23,17 @@ def create_user(
     *,
     role: Role | None = None,
     email: str = "agent@example.com",
+    name: str = "Agent User",
+    password: str = "secret123",
+    is_active: bool = True,
 ) -> User:
     user_role = role or create_role(session)
     user = User(
         role_id=user_role.id,
-        name="Agent User",
+        name=name,
         email=email,
-        hashed_password="hashed-password",
-        is_active=True,
+        hashed_password=get_password_hash(password),
+        is_active=is_active,
     )
     session.add(user)
     session.flush()

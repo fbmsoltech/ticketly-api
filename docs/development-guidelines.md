@@ -219,3 +219,14 @@ Toda revisão deve priorizar:
 
 Antes de aprovar uma mudança, verifique se ela não cria funcionalidades fora da
 fase atual.
+
+## Boas praticas de seguranca
+
+- nunca salvar senha em texto puro;
+- nunca retornar `hashed_password` em schemas ou respostas da API;
+- services nao devem importar FastAPI nem lancar `HTTPException`;
+- rotas protegidas devem usar dependencies de autenticacao e autorizacao;
+- regras de papel devem comparar o nome da role;
+- secrets reais nao devem ser versionados;
+- `AGENTS.md` nao deve ser versionado, alterado sem necessidade ou aparecer em
+  commits e PRs.

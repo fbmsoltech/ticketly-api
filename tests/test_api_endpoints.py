@@ -11,44 +11,53 @@ def _assert_crud_contract(
     update_payload: dict[str, Any],
     updated_field: str,
     updated_value: Any,
+    headers: dict[str, str] | None = None,
 ) -> int:
-    create_response = client.post(path, json=create_payload)
+    create_response = client.post(path, json=create_payload, headers=headers)
     assert create_response.status_code == 201
     created = create_response.json()
     entity_id = created["id"]
 
-    list_response = client.get(path)
+    list_response = client.get(path, headers=headers)
     assert list_response.status_code == 200
-    assert [item["id"] for item in list_response.json()] == [entity_id]
+    assert entity_id in [item["id"] for item in list_response.json()]
 
-    get_response = client.get(f"{path}/{entity_id}")
+    get_response = client.get(f"{path}/{entity_id}", headers=headers)
     assert get_response.status_code == 200
     assert get_response.json()["id"] == entity_id
 
-    update_response = client.patch(f"{path}/{entity_id}", json=update_payload)
+    update_response = client.patch(
+        f"{path}/{entity_id}",
+        json=update_payload,
+        headers=headers,
+    )
     assert update_response.status_code == 200
     assert update_response.json()[updated_field] == updated_value
 
-    missing_response = client.get(f"{path}/9999")
+    missing_response = client.get(f"{path}/9999", headers=headers)
     assert missing_response.status_code == 404
 
-    delete_response = client.delete(f"{path}/{entity_id}")
+    delete_response = client.delete(f"{path}/{entity_id}", headers=headers)
     assert delete_response.status_code == 204
     assert delete_response.content == b""
 
-    deleted_response = client.get(f"{path}/{entity_id}")
+    deleted_response = client.get(f"{path}/{entity_id}", headers=headers)
     assert deleted_response.status_code == 404
     return cast(int, entity_id)
 
 
-def test_lookup_entity_crud_endpoints(client: TestClient) -> None:
+def test_lookup_entity_crud_endpoints(
+    client: TestClient,
+    admin_auth_headers: dict[str, str],
+) -> None:
     _assert_crud_contract(
         client,
         path="/api/v1/roles",
-        create_payload={"name": "ADMIN", "description": "Administrators"},
+        create_payload={"name": "MANAGER", "description": "Managers"},
         update_payload={"description": "Platform administrators"},
         updated_field="description",
         updated_value="Platform administrators",
+        headers=admin_auth_headers,
     )
     _assert_crud_contract(
         client,
@@ -57,6 +66,7 @@ def test_lookup_entity_crud_endpoints(client: TestClient) -> None:
         update_payload={"sort_order": 2},
         updated_field="sort_order",
         updated_value=2,
+        headers=admin_auth_headers,
     )
     _assert_crud_contract(
         client,
@@ -65,6 +75,7 @@ def test_lookup_entity_crud_endpoints(client: TestClient) -> None:
         update_payload={"name": "Urgent"},
         updated_field="name",
         updated_value="Urgent",
+        headers=admin_auth_headers,
     )
     _assert_crud_contract(
         client,
@@ -77,15 +88,18 @@ def test_lookup_entity_crud_endpoints(client: TestClient) -> None:
         update_payload={"is_active": False},
         updated_field="is_active",
         updated_value=False,
+        headers=admin_auth_headers,
     )
 
 
 def test_user_customer_ticket_and_comment_crud_endpoints(
     client: TestClient,
+    admin_auth_headers: dict[str, str],
 ) -> None:
     role = client.post(
         "/api/v1/roles",
         json={"name": "AGENT", "description": "Support agents"},
+        headers=admin_auth_headers,
     ).json()
 
     _assert_crud_contract(
@@ -101,6 +115,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         update_payload={"name": "Jane Support"},
         updated_field="name",
         updated_value="Jane Support",
+        headers=admin_auth_headers,
     )
 
     assignee = client.post(
@@ -112,6 +127,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
             "password": "secret123",
             "is_active": True,
         },
+        headers=admin_auth_headers,
     ).json()
 
     customer_user = client.post(
@@ -123,6 +139,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
             "password": "secret123",
             "is_active": True,
         },
+        headers=admin_auth_headers,
     ).json()
     _assert_crud_contract(
         client,
@@ -135,6 +152,7 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
         update_payload={"phone": "+55 11 98888-0000"},
         updated_field="phone",
         updated_value="+55 11 98888-0000",
+        headers=admin_auth_headers,
     )
 
     ticket_user = client.post(
@@ -146,22 +164,27 @@ def test_user_customer_ticket_and_comment_crud_endpoints(
             "password": "secret123",
             "is_active": True,
         },
+        headers=admin_auth_headers,
     ).json()
     ticket_customer = client.post(
         "/api/v1/customers",
         json={"user_id": ticket_user["id"], "company_name": "Ticket Co."},
+        headers=admin_auth_headers,
     ).json()
     status = client.post(
         "/api/v1/ticket-statuses",
         json={"name": "Open", "description": "Open tickets", "sort_order": 1},
+        headers=admin_auth_headers,
     ).json()
     priority = client.post(
         "/api/v1/ticket-priorities",
         json={"name": "High", "description": "High impact", "sort_order": 1},
+        headers=admin_auth_headers,
     ).json()
     category = client.post(
         "/api/v1/ticket-categories",
         json={"name": "Support", "description": "Support issues", "is_active": True},
+        headers=admin_auth_headers,
     ).json()
 
     _assert_crud_contract(
