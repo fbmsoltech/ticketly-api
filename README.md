@@ -6,8 +6,8 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: API com CRUD das entidades base, testes automatizados e ambiente local
-> com Docker Compose.
+> Status: API com CRUD das entidades base, testes automatizados, ambiente local
+> com Docker Compose e CI com GitHub Actions.
 
 ## Stack planejada
 
@@ -66,8 +66,9 @@ evitando implementar funcionalidades antes do momento planejado.
 - Endpoints CRUD REST das entidades base.
 - Testes automatizados.
 - Docker e Docker Compose para desenvolvimento local.
+- CI com GitHub Actions.
 - Autenticação e autorização.
-- CI/CD com GitHub Actions.
+- CD com GitHub Actions.
 - Deploy no Render.
 
 ## Documentação
@@ -80,6 +81,8 @@ Documentos iniciais:
 - `docs/business-flow.md`
 - `docs/database.md`
 - `docs/development-guidelines.md`
+- `docs/testing.md`
+- `docs/ci.md`
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
 
@@ -88,7 +91,7 @@ Documentos iniciais:
 O projeto usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
 Pydantic v2, repositories, services, endpoints CRUD REST para as entidades base,
 testes automatizados com Pytest e ambiente local com Docker Compose. Ainda não
-há autenticação, autorização ou CI/CD.
+há autenticação, autorização, CD ou deploy.
 
 Para subir o ambiente local completo com API, PostgreSQL principal e PostgreSQL
 para testes:
@@ -215,6 +218,7 @@ Ferramentas configuradas:
 - Black
 - Mypy
 - Pytest
+- GitHub Actions
 
 Comandos recomendados:
 
@@ -224,3 +228,19 @@ black --check .
 mypy .
 pytest
 ```
+
+## CI
+
+O projeto possui integração contínua em `.github/workflows/ci.yml`.
+
+A pipeline executa em pull requests e pushes para `main`, usando Python 3.13 e
+PostgreSQL temporário para validar:
+
+- Ruff;
+- Black;
+- Mypy;
+- migrations com Alembic;
+- testes com Pytest.
+
+O workflow não realiza deploy, publicação de imagens Docker ou uso de secrets
+reais.

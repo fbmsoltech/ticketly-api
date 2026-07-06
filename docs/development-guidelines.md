@@ -113,6 +113,8 @@ Atualizações esperadas:
 - mudanças em schemas e repositories devem atualizar
   `docs/schemas-and-repositories.md`;
 - mudanças em services devem atualizar `docs/services.md`;
+- mudanças em testes devem atualizar `docs/testing.md`;
+- mudanças em CI devem atualizar `docs/ci.md`;
 - mudanças relevantes para agentes devem atualizar `AGENTS.md`;
 - mudanças de visão geral, execução ou status devem atualizar `README.md`.
 
@@ -150,6 +152,9 @@ Para executar os testes no PostgreSQL de testes gerenciado pelo Docker Compose:
 docker compose --profile test run --rm test
 ```
 
+No CI, os testes rodam em um PostgreSQL temporário criado pelo GitHub Actions,
+depois da validação das migrations com Alembic.
+
 Os testes devem seguir as práticas abaixo:
 
 - usar Pytest;
@@ -180,6 +185,24 @@ docker compose down -v
 
 O arquivo `AGENTS.md` deve permanecer fora do Git e fora do contexto de build da
 imagem Docker.
+
+## Integração contínua
+
+O workflow de CI fica em `.github/workflows/ci.yml`.
+
+Ele deve validar:
+
+- Ruff;
+- Black;
+- Mypy;
+- Alembic;
+- Pytest.
+
+O CI deve executar em pull requests e pushes para `main`, usando banco
+PostgreSQL temporário para migrations e testes.
+
+O workflow atual não deve fazer deploy, entrega contínua, build e push de
+imagem Docker, configuração de Docker Hub ou uso de secrets reais.
 
 ## Boas práticas de revisão
 
