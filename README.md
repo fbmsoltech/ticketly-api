@@ -6,7 +6,8 @@ Este projeto tem como objetivo construir um backend profissional de portfólio,
 com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
-> Status: Fase 7 concluída - endpoints CRUD REST das entidades base.
+> Status: Fase 8 concluída - testes automatizados para services e endpoints
+> CRUD das entidades base.
 
 ## Stack planejada
 
@@ -64,8 +65,8 @@ evitando implementar funcionalidades antes do momento planejado.
 - Fase 5: schemas Pydantic v2 e repositories iniciais.
 - Fase 6: services e CRUD interno das entidades base.
 - Fase 7: endpoints CRUD REST das entidades base.
-- Fase 8: autenticação e autorização.
-- Fase 9: testes automatizados.
+- Fase 8: testes automatizados.
+- Fase 9: autenticação e autorização.
 - Fase 10: Docker e Docker Compose.
 - Fase 11: CI/CD com GitHub Actions.
 - Fase 12: deploy no Render.
@@ -86,9 +87,9 @@ Documentos iniciais:
 ## Execução local
 
 Esta fase usa Python 3.13+ e inclui a modelagem inicial do domínio, schemas
-Pydantic v2, repositories iniciais, services para CRUD interno e endpoints CRUD
-REST para as entidades base. Ainda não há autenticação, autorização, testes
-automatizados, Docker ou CI/CD.
+Pydantic v2, repositories iniciais, services para CRUD interno, endpoints CRUD
+REST para as entidades base e testes automatizados com Pytest. Ainda não há
+autenticação, autorização, Docker ou CI/CD.
 
 Para preparar o ambiente local:
 
@@ -173,6 +174,7 @@ Ferramentas configuradas:
 - Ruff
 - Black
 - Mypy
+- Pytest
 
 Comandos recomendados:
 
@@ -180,4 +182,5 @@ Comandos recomendados:
 ruff check .
 black --check .
 mypy .
+pytest
 ```

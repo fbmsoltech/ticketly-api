@@ -180,6 +180,23 @@ Na Fase 7, ainda não devem ser criados:
 - testes automatizados;
 - GitHub Actions.
 
+Na Fase 8, o escopo permitido é:
+
+- adicionar testes automatizados com Pytest;
+- testar services das entidades base;
+- testar endpoints CRUD das entidades base;
+- usar banco isolado de teste, sem depender do banco de produção ou do banco
+  local principal;
+- documentar comandos de execução dos testes.
+
+Na Fase 8, ainda não devem ser criados:
+
+- autenticação;
+- autorização;
+- Docker;
+- Docker Compose;
+- GitHub Actions.
+
 ## Ferramentas de qualidade
 
 As ferramentas iniciais de qualidade ficam configuradas no `pyproject.toml`.
@@ -190,6 +207,7 @@ Comandos recomendados:
 ruff check .
 black --check .
 mypy .
+pytest
 ```
 
 O Ruff deve validar, no mínimo, as famílias de regras `E`, `F`, `I`, `B` e
@@ -252,7 +270,15 @@ O código deverá seguir as práticas abaixo:
 
 ## Boas práticas de testes
 
-Quando a fase de testes começar, os testes deverão seguir as práticas abaixo:
+Os testes automatizados usam Pytest e ficam na pasta `tests/`.
+
+Comando recomendado:
+
+```bash
+pytest
+```
+
+Os testes devem seguir as práticas abaixo:
 
 - usar Pytest;
 - testar regras de negócio relevantes;
