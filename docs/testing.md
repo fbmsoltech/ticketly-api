@@ -140,3 +140,20 @@ Os testes de tickets cobrem:
 - endpoints protegidos por Bearer Token;
 - permissoes por papel, incluindo exclusao exclusiva para `ADMIN`;
 - filtros de listagem e codigos `400`, `401`, `403` e `404`.
+
+## Testes de Comentarios de Tickets
+
+Os testes de comentarios cobrem:
+
+- criacao com usuario autenticado como autor;
+- busca por ID;
+- listagem por ticket;
+- listagem incluindo e excluindo comentarios internos;
+- atualizacao de `content` e `is_internal`;
+- exclusao;
+- erros para ticket, autor e comentario inexistentes;
+- endpoints protegidos por Bearer Token;
+- permissao de criacao/listagem/consulta/atualizacao para `ADMIN` ou `AGENT`;
+- exclusao restrita a `ADMIN`;
+- rejeicao de `CUSTOMER`;
+- garantia de que o body nao sobrescreve o autor.

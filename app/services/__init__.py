@@ -44,7 +44,7 @@ def __getattr__(name: str) -> Any:
 
         return TicketCategoryService
     if name == "TicketCommentService":
-        from app.services.ticket_comment import TicketCommentService
+        from app.services.ticket_comment_service import TicketCommentService
 
         return TicketCommentService
     if name == "TicketPriorityService":

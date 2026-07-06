@@ -81,6 +81,7 @@ app/
 |   |-- ticket_service.py
 |   |-- ticket_category.py
 |   |-- ticket_comment.py
+|   |-- ticket_comment_service.py
 |   |-- ticket_priority.py
 |   |-- ticket_status.py
 |   `-- user.py
@@ -183,6 +184,11 @@ O fluxo de tickets usa `TicketService` para validar customer, categoria, status,
 prioridade e usuario responsavel antes de persistir criacoes ou atualizacoes.
 Rotas de tickets nao acessam repositories diretamente e aplicam somente
 dependencias HTTP de autenticacao e autorizacao.
+
+O fluxo de comentarios usa `TicketCommentService` para validar ticket, validar
+autor usuario, aplicar a autoria do usuario autenticado, filtrar comentarios
+internos quando solicitado e manter commits/rollbacks das escritas fora das
+rotas. O repository de comentarios apenas encapsula consultas por ticket.
 
 ### Repositories
 
@@ -300,6 +306,28 @@ Banco de dados
 O service concentra as regras de existencia das entidades relacionadas e a regra
 de atribuicao para `ADMIN` ou `AGENT`. O repository apenas encapsula consultas e
 filtros de persistencia.
+
+## Fluxo de comentarios de tickets
+
+```text
+Cliente autenticado
+  |
+Route /api/v1/tickets/{ticket_id}/comments
+  |
+require_roles ou require_admin
+  |
+TicketCommentCreate ou TicketCommentUpdate
+  |
+TicketCommentService
+  |
+TicketRepository, UserRepository e TicketCommentRepository
+  |
+Banco de dados
+```
+
+A rota define HTTP, autenticacao e autorizacao. O service garante que o ticket
+existe, que o autor usuario existe e que a criacao usa o usuario autenticado
+como autor. Comentarios internos podem ser filtrados via `include_internal`.
 
 ## Estrutura futura de pastas
 

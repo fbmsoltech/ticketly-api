@@ -87,6 +87,7 @@ Documentos iniciais:
 - `docs/testing.md`
 - `docs/ci.md`
 - `docs/tickets.md`
+- `docs/ticket-comments.md`
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
 
@@ -185,7 +186,7 @@ Endpoints disponíveis:
 - CRUD de `ticket-priorities` em `/api/v1/ticket-priorities`
 - CRUD de `ticket-categories` em `/api/v1/ticket-categories`
 - CRUD de `tickets` em `/api/v1/tickets`
-- CRUD de `ticket-comments` em `/api/v1/ticket-comments`
+- Comentarios de tickets em `/api/v1/tickets/{ticket_id}/comments`
 
 O health check não consulta o banco de dados.
 
@@ -216,6 +217,8 @@ Rotas protegidas:
 - `/api/v1/ticket-priorities`: somente `ADMIN`;
 - `/api/v1/customers`: `ADMIN` ou `AGENT`.
 - `/api/v1/tickets`: `ADMIN` ou `AGENT`, exceto `DELETE`, que exige `ADMIN`.
+- `/api/v1/tickets/{ticket_id}/comments`: `ADMIN` ou `AGENT`, exceto `DELETE`,
+  que exige `ADMIN`.
 
 O health check e `/api/v1/auth/login` sao publicos.
 
@@ -279,6 +282,27 @@ curl -X POST http://localhost:8000/api/v1/tickets \
 `assigned_agent_id` e opcional. Quando informado, deve apontar para usuario com
 papel `ADMIN` ou `AGENT`. A abertura direta por cliente autenticado sera tratada
 separadamente; neste momento o CRUD de tickets e administrativo/de atendimento.
+
+## Comentarios de tickets
+
+Comentarios ficam aninhados em tickets e exigem Bearer Token.
+
+Exemplo de criacao:
+
+```bash
+curl -X POST http://localhost:8000/api/v1/tickets/1/comments \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "We are checking this ticket.",
+    "is_internal": false
+  }'
+```
+
+O autor e sempre o usuario autenticado. O body nao aceita sobrescrever
+`author_user_id`. Comentarios internos (`is_internal=true`) sao visiveis para
+`ADMIN` e `AGENT`; o acesso de `CUSTOMER` aos comentarios sera tratado em fluxo
+proprio.
 
 ## Banco de dados
 

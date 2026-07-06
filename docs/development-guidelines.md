@@ -154,6 +154,19 @@ Regras esperadas:
 Rotas continuam responsaveis por HTTP, autenticacao, autorizacao e serializacao
 de resposta. Repositories continuam responsaveis apenas por acesso ao banco.
 
+## Regras para comentarios de tickets
+
+- rotas de comentarios devem ficar aninhadas em `/tickets/{ticket_id}/comments`;
+- o `ticket_id` da URL prevalece sobre qualquer valor enviado no body;
+- o autor usuario deve ser o usuario autenticado;
+- campos de autoria enviados no body devem ser ignorados;
+- `author_customer_id` fica reservado para fluxo futuro de portal do cliente;
+- comentarios internos usam `is_internal`;
+- `ADMIN` e `AGENT` podem ver comentarios internos;
+- `CUSTOMER` nao acessa endpoints de comentarios enquanto o fluxo de cliente
+  autenticado nao estiver completo;
+- repositories nao devem decidir visibilidade por papel.
+
 ## Boas práticas de testes
 
 Os testes automatizados usam Pytest e ficam na pasta `tests/`.
