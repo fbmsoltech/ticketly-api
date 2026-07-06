@@ -63,6 +63,14 @@ As rotas de tickets exigem autenticacao:
 - `PATCH /tickets/{ticket_id}`: `ADMIN` ou `AGENT`;
 - `DELETE /tickets/{ticket_id}`: somente `ADMIN`.
 
+As rotas de comentarios de tickets exigem autenticacao:
+
+- `POST /tickets/{ticket_id}/comments`: `ADMIN` ou `AGENT`;
+- `GET /tickets/{ticket_id}/comments`: `ADMIN` ou `AGENT`;
+- `GET /tickets/{ticket_id}/comments/{comment_id}`: `ADMIN` ou `AGENT`;
+- `PATCH /tickets/{ticket_id}/comments/{comment_id}`: `ADMIN` ou `AGENT`;
+- `DELETE /tickets/{ticket_id}/comments/{comment_id}`: somente `ADMIN`.
+
 ## Users
 
 - `POST /users`: cria usuario;
@@ -108,6 +116,42 @@ Payload basico de criacao:
 
 `assigned_agent_id` e opcional. Quando informado, o usuario deve ter papel
 `ADMIN` ou `AGENT`.
+
+## Comentarios de Tickets
+
+- `POST /tickets/{ticket_id}/comments`: cria comentario e retorna `201`;
+- `GET /tickets/{ticket_id}/comments`: lista comentarios do ticket;
+- `GET /tickets/{ticket_id}/comments/{comment_id}`: busca comentario por ID;
+- `PATCH /tickets/{ticket_id}/comments/{comment_id}`: atualiza comentario;
+- `DELETE /tickets/{ticket_id}/comments/{comment_id}`: remove comentario e
+  retorna `204`.
+
+Query params aceitos em `GET /tickets/{ticket_id}/comments`:
+
+- `include_internal`;
+- `offset`;
+- `limit`.
+
+Payload basico de criacao:
+
+```json
+{
+  "content": "We are checking this ticket.",
+  "is_internal": false
+}
+```
+
+Payload basico de atualizacao:
+
+```json
+{
+  "content": "Updated comment.",
+  "is_internal": true
+}
+```
+
+O autor e definido pelo usuario autenticado. Campos de autor enviados no body
+sao ignorados.
 
 ## Codigos relevantes
 
