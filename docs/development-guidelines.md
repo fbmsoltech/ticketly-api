@@ -136,6 +136,24 @@ O código deverá seguir as práticas abaixo:
 - usar SQLAlchemy 2.x em estilo moderno;
 - usar migrations com Alembic.
 
+## Services de dominio
+
+Services de dominio devem receber a sessao ou repositories necessarios para
+coordenar o caso de uso sem importar FastAPI.
+
+Regras esperadas:
+
+- validar existencia de entidades relacionadas antes de persistir dados;
+- lancar excecoes de service, como `ResourceNotFoundError` ou
+  `InvalidOperationError`;
+- fazer `commit` em operacoes de escrita quando forem donos do caso de uso;
+- fazer `rollback` em erro;
+- manter regras de negocio fora de routes e repositories;
+- usar schemas Pydantic de entrada para criar e atualizar models.
+
+Rotas continuam responsaveis por HTTP, autenticacao, autorizacao e serializacao
+de resposta. Repositories continuam responsaveis apenas por acesso ao banco.
+
 ## Boas práticas de testes
 
 Os testes automatizados usam Pytest e ficam na pasta `tests/`.
@@ -158,6 +176,11 @@ depois da validação das migrations com Alembic.
 Os testes devem seguir as práticas abaixo:
 
 - usar Pytest;
+- marcar novos testes com `unit` ou `integration`;
+- nao chamar teste com banco real de unitario;
+- manter testes com banco, repositories reais ou `TestClient` em
+  `tests/integration`;
+- manter unit tests em `tests/unit` sem dependencia de infraestrutura externa;
 - testar regras de negócio relevantes;
 - testar endpoints importantes;
 - evitar dependência do banco de produção;

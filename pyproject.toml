@@ -47,3 +47,12 @@ target-version = ["py313"]
 python_version = "3.13"
 strict = true
 warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+    "unit: testes unitarios sem dependencia de infraestrutura externa",
+    "integration: testes de integracao com banco, API ou multiplas camadas reais",
+]

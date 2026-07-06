@@ -1,7 +1,10 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.models.role import Role
 from app.models.user import User
+
+pytestmark = pytest.mark.integration
 
 
 def test_admin_creates_user(

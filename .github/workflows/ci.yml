@@ -53,10 +53,13 @@ jobs:
         run: black --check .
 
       - name: Run Mypy
-        run: mypy .
+        run: mypy app tests
+
+      - name: Run unit tests
+        run: pytest -m unit
 
       - name: Run Alembic migrations
         run: alembic upgrade head
 
-      - name: Run tests
-        run: pytest
+      - name: Run integration tests
+        run: pytest -m integration

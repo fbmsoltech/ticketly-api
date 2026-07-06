@@ -71,8 +71,25 @@ Regras previstas:
 Regras previstas:
 
 - Um ticket pode ser atribuído a um atendente.
-- A atribuição deve respeitar permissões futuras.
+- A atribuicao atual aceita somente usuarios com papel `ADMIN` ou `AGENT`.
 - A regra de atendimento deve ficar na camada de services.
+
+## Regras atuais do CRUD de tickets
+
+O CRUD de tickets permite uso administrativo e de atendimento.
+
+Regras atuais:
+
+- `ADMIN` pode criar, listar, consultar, atualizar, atribuir e excluir tickets;
+- `AGENT` pode criar, listar, consultar e atualizar tickets;
+- `CUSTOMER` nao acessa o CRUD de tickets diretamente;
+- exclusao de tickets exige `ADMIN`;
+- criacao e atualizacao validam customer, categoria, status e prioridade;
+- atribuicao valida se o usuario responsavel existe e possui papel `ADMIN` ou
+  `AGENT`.
+
+A abertura direta por cliente autenticado sera tratada separadamente com regras
+de acesso aos proprios tickets.
 
 ## Fluxo básico de comentários
 

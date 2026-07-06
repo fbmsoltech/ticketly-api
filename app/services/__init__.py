@@ -3,6 +3,7 @@ from typing import Any
 from app.services.exceptions import (
     AuthenticationError,
     AuthorizationError,
+    InvalidOperationError,
     ResourceAlreadyExistsError,
     ResourceNotFoundError,
 )
@@ -12,6 +13,7 @@ __all__ = [
     "AuthenticationError",
     "AuthorizationError",
     "CustomerService",
+    "InvalidOperationError",
     "ResourceAlreadyExistsError",
     "ResourceNotFoundError",
     "RoleService",
@@ -50,7 +52,7 @@ def __getattr__(name: str) -> Any:
 
         return TicketPriorityService
     if name == "TicketService":
-        from app.services.ticket import TicketService
+        from app.services.ticket_service import TicketService
 
         return TicketService
     if name == "TicketStatusService":

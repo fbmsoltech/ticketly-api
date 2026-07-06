@@ -78,6 +78,7 @@ app/
 |   |-- customer.py
 |   |-- role.py
 |   |-- ticket.py
+|   |-- ticket_service.py
 |   |-- ticket_category.py
 |   |-- ticket_comment.py
 |   |-- ticket_priority.py
@@ -127,12 +128,10 @@ Responsabilidades atuais:
 O endpoint de health check não consulta banco de dados nem qualquer dependência
 externa.
 
-Ainda não fazem parte do projeto:
+Ainda nao fazem parte do projeto:
 
-- autenticação;
-- autorização;
 - deploy;
-- entrega contínua.
+- entrega continua.
 
 ## Integração contínua
 
@@ -179,6 +178,11 @@ Responsabilidades esperadas:
 
 Os services são chamados pelas rotas HTTP para expor CRUD REST das entidades
 base.
+
+O fluxo de tickets usa `TicketService` para validar customer, categoria, status,
+prioridade e usuario responsavel antes de persistir criacoes ou atualizacoes.
+Rotas de tickets nao acessam repositories diretamente e aplicam somente
+dependencias HTTP de autenticacao e autorizacao.
 
 ### Repositories
 
@@ -274,6 +278,28 @@ Schema de saída
   |
 Resposta HTTP
 ```
+
+## Fluxo de tickets
+
+```text
+Cliente autenticado
+  |
+Route /api/v1/tickets
+  |
+require_roles ou require_admin
+  |
+TicketCreate ou TicketUpdate
+  |
+TicketService
+  |
+Repositories de ticket e entidades relacionadas
+  |
+Banco de dados
+```
+
+O service concentra as regras de existencia das entidades relacionadas e a regra
+de atribuicao para `ADMIN` ou `AGENT`. O repository apenas encapsula consultas e
+filtros de persistencia.
 
 ## Estrutura futura de pastas
 
