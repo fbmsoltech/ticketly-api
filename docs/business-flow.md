@@ -4,7 +4,9 @@
 
 O Ticketly API será uma API REST para gestão de tickets de suporte técnico.
 
-O sistema permitirá que clientes registrem solicitações de suporte, que atendentes acompanhem e respondam essas solicitações, e que administradores gerenciem usuários, papéis e configurações relacionadas ao atendimento.
+O sistema permitirá que clientes registrem solicitações de suporte, que
+atendentes acompanhem e respondam essas solicitações, e que administradores
+gerenciem usuários, papéis e configurações relacionadas ao atendimento.
 
 ## Principais atores
 
@@ -39,7 +41,8 @@ Responsabilidades previstas:
 - gerenciar usuários;
 - gerenciar papéis;
 - acompanhar tickets;
-- configurar categorias, status e prioridades quando essas funcionalidades existirem.
+- configurar categorias, status e prioridades quando essas funcionalidades
+  existirem.
 
 ## Fluxo básico de abertura de ticket
 
@@ -84,7 +87,8 @@ Regras previstas:
 - Um ticket pode ter vários comentários.
 - Comentários devem manter vínculo com o ticket.
 - Comentários devem manter vínculo com o autor.
-- Permissões de comentário dependerão do papel do usuário e do relacionamento com o ticket.
+- Permissões de comentário dependerão do papel do usuário e do relacionamento
+  com o ticket.
 
 ## Fluxo básico de mudança de status
 
@@ -93,7 +97,7 @@ Regras previstas:
 3. O sistema atualiza o status do ticket.
 4. A mudança fica refletida no acompanhamento do ticket.
 
-Status específicos serão definidos em fase futura.
+Status específicos serão definidos em uma entrega própria.
 
 Regras previstas:
 
@@ -128,9 +132,9 @@ Regras iniciais previstas:
 - Atendentes devem acessar recursos relacionados ao atendimento.
 - Administradores devem ter acesso a recursos de gestão.
 
-## Modelagem inicial da Fase 4
+## Modelagem inicial
 
-A Fase 4 cria a representação persistida inicial das entidades previstas:
+A representação persistida inicial cobre as entidades previstas:
 
 - usuários e papéis;
 - clientes;
@@ -140,16 +144,16 @@ A Fase 4 cria a representação persistida inicial das entidades previstas:
 
 Essa modelagem registra apenas a estrutura relacional inicial. Regras como
 transições de status, permissões, atribuição de atendentes e validação de acesso
-serão implementadas em services nas fases futuras.
+serão implementadas em services quando esses fluxos forem detalhados.
 
-## Contratos e persistência da Fase 5
+## Contratos e persistência
 
-A Fase 5 adiciona schemas e repositories iniciais para preparar a evolução do
-domínio sem expor novos fluxos por HTTP.
+Schemas e repositories preparam a evolução do domínio mantendo contratos de API
+separados da persistência.
 
-Os schemas representam dados de entrada e saída para uso futuro pela API. Os
+Os schemas representam dados de entrada e saída para uso pela API. Os
 repositories encapsulam consultas e operações de persistência para que services
-futuros possam coordenar regras de negócio.
+possam coordenar regras de negócio.
 
-Esta fase ainda não define regras de transição de status, permissões, atribuição
-de atendentes, autenticação ou autorização.
+O projeto ainda não define regras de transição de status, permissões,
+atribuição de atendentes, autenticação ou autorização.

@@ -5,17 +5,18 @@
 O Ticketly API será uma API REST moderna para gestão de tickets e suporte
 técnico.
 
-A arquitetura futura deverá seguir separação clara entre camadas, com foco em
-legibilidade, testabilidade, manutenção e evolução incremental.
+A arquitetura segue separação clara entre camadas, com foco em legibilidade,
+testabilidade, manutenção e evolução incremental.
 
 O projeto será organizado para evitar acoplamento excessivo entre HTTP, regra de
 negócio e persistência de dados.
 
 ## Estado atual da arquitetura
 
-A Fase 7 expõe endpoints CRUD REST para as entidades base já cobertas por
+A aplicação expõe endpoints CRUD REST para as entidades base já cobertas por
 schemas, repositories e services, mantendo rotas finas e delegando operações de
-aplicação para services.
+aplicação para services. O ambiente local usa Docker Compose para executar a API
+e bancos PostgreSQL separados para desenvolvimento e testes.
 
 Estrutura atual relevante:
 
@@ -89,6 +90,8 @@ alembic/
 |   `-- 0002_initial_domain_models.py
 |-- env.py
 `-- script.py.mako
+docker-compose.yml
+Dockerfile
 ```
 
 Responsabilidades atuais:
@@ -111,17 +114,17 @@ Responsabilidades atuais:
 - `app/services/`: coordena casos de uso internos de CRUD usando schemas e
   repositories.
 - `alembic/`: contém a configuração inicial de migrations.
+- `Dockerfile`: define a imagem local da API.
+- `docker-compose.yml`: orquestra a API, o PostgreSQL principal e o PostgreSQL
+  de testes.
 
 O endpoint de health check não consulta banco de dados nem qualquer dependência
-externa nesta fase.
+externa.
 
-Ainda não fazem parte desta fase:
+Ainda não fazem parte do projeto:
 
 - autenticação;
 - autorização;
-- testes automatizados;
-- Docker;
-- Docker Compose;
 - GitHub Actions.
 
 ## Separaçao de responsabilidades
@@ -153,8 +156,8 @@ Responsabilidades esperadas:
 - decidir erros de negócio;
 - manter a lógica fora das rotas.
 
-Na Fase 7, os services são chamados pelas rotas HTTP para expor CRUD REST das
-entidades base.
+Os services são chamados pelas rotas HTTP para expor CRUD REST das entidades
+base.
 
 ### Repositories
 
@@ -197,9 +200,9 @@ Responsabilidades esperadas:
 
 ## Camada de banco
 
-A camada `app/db/` prepara a persistência relacional para fases futuras.
+A camada `app/db/` prepara a persistência relacional da aplicação.
 
-Nesta fase ela contém apenas:
+A camada contém:
 
 - uma base declarativa do SQLAlchemy;
 - uma engine configurada por `DATABASE_URL`;
@@ -207,6 +210,8 @@ Nesta fase ela contém apenas:
 
 As rotas CRUD recebem uma sessão por dependência. A sessão confirma a transação
 ao final de requisições bem-sucedidas e executa rollback quando ocorre exceção.
+No ambiente Docker Compose, essa sessão usa o serviço `db` por meio da variável
+`DATABASE_URL`.
 
 ## Por que evitar controller gordo
 
