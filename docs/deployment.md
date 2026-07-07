@@ -39,11 +39,14 @@ O start script executa:
 
 ```bash
 alembic upgrade head
+python scripts/seed_initial_data.py
 uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}"
 ```
 
-O Render fornece a variavel `PORT`; localmente, o script usa `8000` como
-fallback.
+As migrations rodam primeiro, o seed inicial roda depois e o Uvicorn inicia por
+ultimo. O seed e idempotente, portanto pode rodar a cada restart do Render sem
+duplicar roles, status, prioridades, categorias ou admin inicial. O Render
+fornece a variavel `PORT`; localmente, o script usa `8000` como fallback.
 
 ## Variaveis de ambiente
 
@@ -60,6 +63,10 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 LOG_LEVEL
 ENABLE_REQUEST_LOGGING
 ENABLE_METRICS
+CREATE_INITIAL_ADMIN
+INITIAL_ADMIN_NAME
+INITIAL_ADMIN_EMAIL
+INITIAL_ADMIN_PASSWORD
 ```
 
 Valores esperados:
@@ -73,10 +80,16 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
 LOG_LEVEL=INFO
 ENABLE_REQUEST_LOGGING=true
 ENABLE_METRICS=true
+CREATE_INITIAL_ADMIN=false
 ```
 
 `DATABASE_URL` deve vir do Render Postgres. `JWT_SECRET_KEY` deve ser um segredo
 forte criado no Render e nunca deve usar o valor `change-me-in-production`.
+Para o primeiro deploy, `CREATE_INITIAL_ADMIN=true` pode criar um usuario
+administrador inicial usando `INITIAL_ADMIN_EMAIL` e
+`INITIAL_ADMIN_PASSWORD`. Depois do primeiro acesso, troque a senha ou volte
+`CREATE_INITIAL_ADMIN=false` se nao quiser revalidar esse admin em restarts.
+Nunca use `INITIAL_ADMIN_PASSWORD=change-me` em producao.
 
 Arquivos `.env`, `.env.production` e `.env.render` nao devem ser enviados ao
 Git.
@@ -158,6 +171,8 @@ PostgreSQL estiver indisponivel ou quando migrations falharem.
   head`.
 - Se a aplicacao rejeitar a inicializacao, confirme `APP_ENV=production`,
   `DATABASE_URL` e `JWT_SECRET_KEY`.
+- Se o seed falhar, confirme `CREATE_INITIAL_ADMIN`, `INITIAL_ADMIN_EMAIL` e
+  `INITIAL_ADMIN_PASSWORD`.
 - Se `JWT_SECRET_KEY` estiver como `change-me-in-production`, substitua por um
   segredo forte.
 - Se o banco nao conectar, confirme se `DATABASE_URL` veio do Render Postgres.

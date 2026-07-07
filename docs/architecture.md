@@ -70,6 +70,8 @@ app/
 |   |-- logging.py
 |   |-- metrics.py
 |   `-- middleware.py
+|-- seed/
+|   `-- initial_data.py
 |-- schemas/
 |   |-- base.py
 |   |-- customer.py
@@ -127,6 +129,8 @@ Responsabilidades atuais:
 - `app/models/`: define as entidades persistidas e seus relacionamentos.
 - `app/observability/`: concentra logging estruturado, middleware de logging de
   requisicoes e coletor de metricas em memoria.
+- `app/seed/`: concentra o seed inicial idempotente de roles, status,
+  prioridades, categorias e admin opcional.
 - `app/schemas/`: define contratos Pydantic v2 de criação, atualização e
   leitura para uso futuro pela API.
 - `app/repositories/`: encapsula consultas e operações básicas de persistência
@@ -138,7 +142,8 @@ Responsabilidades atuais:
 - `docker-compose.yml`: orquestra a API, o PostgreSQL principal e o PostgreSQL
   de testes.
 - `render.yaml`: documenta a infraestrutura Render via Blueprint.
-- `scripts/start.sh`: executa migrations Alembic e inicia Uvicorn no deploy.
+- `scripts/start.sh`: executa migrations Alembic, roda o seed inicial e inicia
+  Uvicorn no deploy.
 - `.github/workflows/ci.yml`: valida qualidade, migrations e testes no GitHub
   Actions.
 
@@ -156,9 +161,16 @@ Render PostgreSQL
 ```
 
 O Render Web Service executa o build com `pip install -e .` e inicia a aplicacao
-com `bash scripts/start.sh`. O script roda `alembic upgrade head` antes do
-Uvicorn para manter o schema do Render PostgreSQL alinhado as migrations
-versionadas.
+com `bash scripts/start.sh`. O script roda as migrations, executa o seed inicial
+idempotente e so entao inicia o Uvicorn.
+
+```text
+alembic upgrade head
+        |
+seed_initial_data
+        |
+uvicorn
+```
 
 O health check configurado no Render usa `/api/v1/health/live`, que nao consulta
 o banco. A verificacao de readiness continua em `/api/v1/health/ready` e valida

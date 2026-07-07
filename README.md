@@ -93,6 +93,7 @@ Documentos iniciais:
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
 - `docs/deployment.md`
+- `docs/seed.md`
 
 ## Execução local
 
@@ -191,6 +192,22 @@ Para iniciar a API:
 uvicorn app.main:app --reload
 ```
 
+## Seed inicial
+
+Consulte `docs/seed.md`.
+
+Exemplo local para criar um administrador inicial:
+
+```env
+CREATE_INITIAL_ADMIN=true
+INITIAL_ADMIN_NAME=Admin
+INITIAL_ADMIN_EMAIL=admin@example.com
+INITIAL_ADMIN_PASSWORD=uma-senha-forte
+```
+
+Nao use senha real em arquivos versionados. O seed roda automaticamente no
+`scripts/start.sh` depois das migrations e nao duplica dados.
+
 Endpoints disponíveis:
 
 - `GET /api/v1/health`
@@ -258,17 +275,8 @@ Rotas protegidas:
 
 Os health checks, `/api/v1/metrics` e `/api/v1/auth/login` sao publicos.
 
-Como ainda nao existe seed automatico, para validacao manual pode ser necessario
-criar a role `ADMIN` diretamente no banco. Exemplo SQL:
-
-```sql
-INSERT INTO roles (name, description)
-VALUES ('ADMIN', 'Administrators');
-```
-
-Depois crie um usuario admin pelo endpoint de usuarios em um ambiente ja
-autorizado, ou insira manualmente um hash gerado pela aplicacao em ambiente de
-desenvolvimento.
+O seed inicial cria as roles base automaticamente. Um usuario admin inicial pode
+ser criado por variaveis de ambiente quando `CREATE_INITIAL_ADMIN=true`.
 
 Login:
 

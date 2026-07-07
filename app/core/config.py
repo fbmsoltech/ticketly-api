@@ -8,6 +8,7 @@ DEFAULT_DATABASE_URL = (
     "postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_db"
 )
 DEFAULT_JWT_SECRET_KEY = "change-me-in-production-use-a-strong-secret-key"
+DEFAULT_INITIAL_ADMIN_PASSWORD = "change-me"
 PRODUCTION_PLACEHOLDER_JWT_SECRET_KEYS = {
     "change-me-in-production",
     DEFAULT_JWT_SECRET_KEY,
@@ -35,6 +36,10 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     enable_request_logging: bool = True
     enable_metrics: bool = True
+    create_initial_admin: bool = False
+    initial_admin_name: str = "Admin"
+    initial_admin_email: str | None = None
+    initial_admin_password: str | None = None
 
     @field_validator("app_env")
     @classmethod
@@ -59,6 +64,32 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_settings(self) -> Self:
+        if self.create_initial_admin:
+            if not self.initial_admin_email:
+                raise ValueError(
+                    "INITIAL_ADMIN_EMAIL must be configured when "
+                    "CREATE_INITIAL_ADMIN is true."
+                )
+
+            if self.initial_admin_password is None:
+                raise ValueError(
+                    "INITIAL_ADMIN_PASSWORD must be configured when "
+                    "CREATE_INITIAL_ADMIN is true."
+                )
+
+            if not self.initial_admin_password.strip():
+                raise ValueError("INITIAL_ADMIN_PASSWORD must not be empty.")
+
+            if self.initial_admin_password == DEFAULT_INITIAL_ADMIN_PASSWORD:
+                raise ValueError(
+                    "INITIAL_ADMIN_PASSWORD must not use the default example value."
+                )
+
+            if len(self.initial_admin_password) < 8:
+                raise ValueError(
+                    "INITIAL_ADMIN_PASSWORD must have at least 8 characters."
+                )
+
         if self.app_env != "production":
             return self
 
