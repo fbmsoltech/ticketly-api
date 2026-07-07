@@ -21,6 +21,15 @@ nome desejado e ajuste o `render.yaml`.
 O `DATABASE_URL` da aplicacao deve vir da connection string gerada pelo Render
 Postgres. Nao copie uma URL real para arquivos versionados.
 
+Para compartilhar o mesmo banco fisico com outros projetos, configure tambem:
+
+```env
+DATABASE_SCHEMA=ticketly
+```
+
+Assim, as tabelas da Ticketly ficam isoladas no schema `ticketly` e nao se
+misturam com tabelas de outros projetos no `public` ou em outros schemas.
+
 ## Web Service
 
 Crie um Web Service apontando para o repositorio do Ticketly API.
@@ -57,6 +66,7 @@ APP_NAME
 APP_VERSION
 APP_ENV
 DATABASE_URL
+DATABASE_SCHEMA
 JWT_SECRET_KEY
 JWT_ALGORITHM
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES
@@ -75,6 +85,7 @@ Valores esperados:
 APP_NAME=Ticketly API
 APP_VERSION=0.1.0
 APP_ENV=production
+DATABASE_SCHEMA=ticketly
 JWT_ALGORITHM=HS256
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
 LOG_LEVEL=INFO
@@ -85,6 +96,7 @@ CREATE_INITIAL_ADMIN=false
 
 `DATABASE_URL` deve vir do Render Postgres. `JWT_SECRET_KEY` deve ser um segredo
 forte criado no Render e nunca deve usar o valor `change-me-in-production`.
+`DATABASE_SCHEMA=ticketly` nao e secret e pode ficar no `render.yaml`.
 Para o primeiro deploy, `CREATE_INITIAL_ADMIN=true` pode criar um usuario
 administrador inicial usando `INITIAL_ADMIN_EMAIL` e
 `INITIAL_ADMIN_PASSWORD`. Depois do primeiro acesso, troque a senha ou volte
@@ -105,6 +117,7 @@ O arquivo `render.yaml` documenta o Blueprint com:
 - health check path `/api/v1/health/live`;
 - banco `ticketly-db`;
 - `DATABASE_URL` vindo do banco gerenciado;
+- `DATABASE_SCHEMA=ticketly` para isolamento por schema;
 - `JWT_SECRET_KEY` com `sync: false`.
 
 O plano gratuito e adequado para portfolio e validacao, mas nao para producao
@@ -130,6 +143,7 @@ bash scripts/start.sh
 ```
 
 5. Configure as variaveis de ambiente.
+   Inclua `DATABASE_SCHEMA=ticketly` para deploy compartilhado.
 6. Configure o health check path:
 
 ```text
@@ -176,6 +190,8 @@ PostgreSQL estiver indisponivel ou quando migrations falharem.
 - Se `JWT_SECRET_KEY` estiver como `change-me-in-production`, substitua por um
   segredo forte.
 - Se o banco nao conectar, confirme se `DATABASE_URL` veio do Render Postgres.
+- Se tabelas aparecerem no schema errado, confirme `DATABASE_SCHEMA=ticketly`
+  antes de executar migrations e seed.
 - Se o health check falhar no Render, confirme se o path configurado e
   `/api/v1/health/live`.
 - Se `/api/v1/health/ready` retornar `503`, investigue conectividade e estado

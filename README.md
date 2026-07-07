@@ -84,6 +84,7 @@ Documentos iniciais:
 - `docs/api-endpoints.md`
 - `docs/business-flow.md`
 - `docs/database.md`
+- `docs/database-schema.md`
 - `docs/development-guidelines.md`
 - `docs/testing.md`
 - `docs/ci.md`
@@ -353,6 +354,7 @@ proprio.
 A infraestrutura de banco usa PostgreSQL, SQLAlchemy 2.x e Alembic:
 
 - `DATABASE_URL` configurado via ambiente;
+- `DATABASE_SCHEMA` para isolar tabelas em um schema PostgreSQL especifico;
 - base declarativa em `app/db/base.py`;
 - engine, sessionmaker e ciclo transacional por requisição em
   `app/db/session.py`;
@@ -373,6 +375,19 @@ alembic current
 
 As tabelas iniciais representam usuários, papéis, clientes, tickets,
 comentários, categorias, status e prioridades.
+
+## Schema PostgreSQL
+
+A Ticketly API pode usar um schema proprio via `DATABASE_SCHEMA`.
+
+Para deploy compartilhado no Render, use:
+
+```env
+DATABASE_SCHEMA=ticketly
+```
+
+Sem essa variavel, o default local e `public` para compatibilidade. Veja
+`docs/database-schema.md` para detalhes de isolamento, Alembic e validacao.
 
 Antes de executar `alembic upgrade head`, confirme que o banco e o usuário do
 `DATABASE_URL` existem no PostgreSQL local. Veja o passo a passo em

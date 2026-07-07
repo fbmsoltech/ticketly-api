@@ -1,3 +1,4 @@
+import re
 from functools import lru_cache
 from typing import Self
 
@@ -13,6 +14,7 @@ PRODUCTION_PLACEHOLDER_JWT_SECRET_KEYS = {
     "change-me-in-production",
     DEFAULT_JWT_SECRET_KEY,
 }
+DATABASE_SCHEMA_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 
 
 def normalize_database_url(database_url: str) -> str:
@@ -25,11 +27,26 @@ def normalize_database_url(database_url: str) -> str:
     return database_url
 
 
+def validate_database_schema(schema: str) -> str:
+    normalized_schema = schema.strip()
+
+    if not normalized_schema:
+        raise ValueError("DATABASE_SCHEMA cannot be empty.")
+
+    if DATABASE_SCHEMA_PATTERN.fullmatch(normalized_schema) is None:
+        raise ValueError(
+            "DATABASE_SCHEMA must contain only letters, numbers and underscores."
+        )
+
+    return normalized_schema
+
+
 class Settings(BaseSettings):
     app_name: str = "Ticketly API"
     app_version: str = "0.1.0"
     app_env: str = "local"
     database_url: str = DEFAULT_DATABASE_URL
+    database_schema: str = "public"
     jwt_secret_key: str = DEFAULT_JWT_SECRET_KEY
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
@@ -53,6 +70,11 @@ class Settings(BaseSettings):
             raise ValueError("DATABASE_URL must be configured.")
 
         return normalize_database_url(database_url)
+
+    @field_validator("database_schema")
+    @classmethod
+    def validate_database_schema(cls, database_schema: str) -> str:
+        return validate_database_schema(database_schema)
 
     @field_validator("jwt_secret_key")
     @classmethod

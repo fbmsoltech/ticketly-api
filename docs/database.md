@@ -11,6 +11,7 @@ O projeto inclui:
 - SQLAlchemy 2.x para engine, sessões e mapeamento;
 - Alembic para migrations;
 - `DATABASE_URL` como variável de ambiente;
+- `DATABASE_SCHEMA` como variavel de ambiente para isolamento por schema;
 - base declarativa para models;
 - models iniciais em `app/models/`;
 - migration para criação das tabelas do domínio.
@@ -29,6 +30,18 @@ DATABASE_URL=postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/tic
 
 O arquivo `.env.example` contém os valores de referência para desenvolvimento
 local.
+
+O schema PostgreSQL e configurado por `DATABASE_SCHEMA`. O default da aplicacao
+e `public` quando a variavel nao e definida. Em deploy compartilhado no Render,
+use:
+
+```env
+DATABASE_SCHEMA=ticketly
+```
+
+Com esse valor, as tabelas ficam em `ticketly.*` e a tabela de versao do
+Alembic fica em `ticketly.alembic_version`. Veja `docs/database-schema.md` para
+detalhes.
 
 No Docker Compose, a aplicação acessa os bancos pelos nomes dos serviços:
 
@@ -117,6 +130,7 @@ usuário, senha, host, porta e banco reais do ambiente local.
 - `app/models/`: define os models iniciais de domínio.
 - `alembic.ini`: configura o Alembic.
 - `alembic/env.py`: conecta Alembic às settings e à metadata do SQLAlchemy.
+  Tambem cria o schema configurado e posiciona a tabela `alembic_version` nele.
 - `alembic/script.py.mako`: template de novas migrations.
 - `alembic/versions/`: armazena migrations versionadas.
 
@@ -142,6 +156,10 @@ categoria e atendente atribuído.
 A migration `0001_initial_database_setup.py` permanece vazia porque representa
 apenas a configuração inicial. A migration `0002_initial_domain_models.py`
 cria as primeiras tabelas reais do banco de dados.
+
+Antes de rodar as migrations, o Alembic executa `CREATE SCHEMA IF NOT EXISTS`
+para o schema configurado e ajusta o `search_path` da conexao. As migrations
+existentes nao hardcodam `public` nem `ticketly`.
 
 Comandos úteis:
 
