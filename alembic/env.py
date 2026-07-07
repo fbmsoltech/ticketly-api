@@ -42,7 +42,10 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{database_schema}"'))
+        connection.commit()
+
         connection.execute(text(f'SET search_path TO "{database_schema}"'))
+        connection.commit()
 
         context.configure(
             connection=connection,
