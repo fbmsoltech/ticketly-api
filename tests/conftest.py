@@ -1,14 +1,16 @@
 from collections.abc import Generator
 from os import getenv
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 import app.models  # noqa: F401
+from app.core.config import settings
 from app.core.security import create_access_token
 from app.db.base import Base
 from app.db.session import get_db_session
@@ -31,6 +33,31 @@ from tests.factories import (
 )
 
 
+def _quote_schema(schema: str) -> str:
+    return f'"{schema}"'
+
+
+def _configure_postgresql_schema(test_engine: Engine) -> None:
+    if test_engine.url.get_backend_name() != "postgresql":
+        return
+
+    schema = settings.database_schema
+
+    @event.listens_for(test_engine, "connect")
+    def set_search_path(
+        dbapi_connection: Any,
+        _connection_record: Any,
+    ) -> None:
+        cursor = dbapi_connection.cursor()
+        try:
+            cursor.execute(f"SET search_path TO {_quote_schema(schema)}")
+        finally:
+            cursor.close()
+
+    with test_engine.begin() as connection:
+        connection.execute(text(f"CREATE SCHEMA IF NOT EXISTS {_quote_schema(schema)}"))
+
+
 @pytest.fixture
 def engine() -> Generator[Engine]:
     test_database_url = getenv("TEST_DATABASE_URL")
@@ -43,12 +70,24 @@ def engine() -> Generator[Engine]:
     else:
         test_engine = create_engine(test_database_url, pool_pre_ping=True)
 
+    _configure_postgresql_schema(test_engine)
     Base.metadata.drop_all(bind=test_engine)
     Base.metadata.create_all(bind=test_engine)
     try:
         yield test_engine
     finally:
         Base.metadata.drop_all(bind=test_engine)
+        if (
+            test_engine.url.get_backend_name() == "postgresql"
+            and settings.database_schema != "public"
+        ):
+            with test_engine.begin() as connection:
+                connection.execute(
+                    text(
+                        "DROP SCHEMA IF EXISTS "
+                        f"{_quote_schema(settings.database_schema)} CASCADE"
+                    )
+                )
         test_engine.dispose()
 
 

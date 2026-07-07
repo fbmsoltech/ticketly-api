@@ -18,6 +18,9 @@ Estrutura atual:
   cliente de teste da API;
 - `tests/factories.py`: concentra dados auxiliares para os testes;
 - `tests/unit/`: testes unitarios sem banco ou infraestrutura externa;
+- `tests/unit/db/`: testes unitarios de configuracao de URL e schema;
+- `tests/integration/db/`: testes de migrations, schema PostgreSQL e seed no
+  schema configurado;
 - `tests/integration/services/`: testes de services com repositories e banco
   reais;
 - `tests/integration/api/`: testes de endpoints com `TestClient` e banco real;
@@ -95,6 +98,11 @@ pytest -m integration
 As variaveis `DATABASE_URL` e `TEST_DATABASE_URL` apontam para o banco
 temporario do CI durante a execucao.
 
+Quando `DATABASE_SCHEMA=ticketly`, os testes de integracao de banco validam que
+o schema configurado e criado, que `alembic_version` fica nesse schema, que as
+tabelas principais existem nele e que o seed consulta os dados por meio da
+sessao configurada da aplicacao.
+
 ## Boas Praticas
 
 - testes de service devem validar regras e casos de uso;
@@ -104,6 +112,8 @@ temporario do CI durante a execucao.
 - unit tests nao devem depender de infraestrutura externa;
 - testes com banco real devem ficar em `tests/integration`;
 - novos testes devem usar marker `unit` ou `integration`.
+- testes de schema PostgreSQL devem usar banco isolado de teste e nunca banco de
+  producao.
 
 ## Fixtures
 

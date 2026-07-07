@@ -99,6 +99,14 @@ alembic downgrade -1
 Migrations devem refletir mudanças reais de schema e permanecer alinhadas à
 metadata dos models SQLAlchemy.
 
+Regras para schema PostgreSQL:
+
+- nao criar tabelas no `public` quando `DATABASE_SCHEMA=ticketly`;
+- nao misturar projetos diferentes no mesmo schema;
+- migrations devem respeitar o schema configurado;
+- seed deve usar a `SessionLocal` configurada;
+- nunca hardcodar schema em regra de negocio, routes, services ou repositories.
+
 ## Regra de atualização de documentação
 
 A documentação deve acompanhar a evolução do projeto.
@@ -158,6 +166,7 @@ O código deverá seguir as práticas abaixo:
 - validar `APP_ENV=production` antes do deploy;
 - substituir qualquer placeholder de `JWT_SECRET_KEY` em producao;
 - usar `DATABASE_URL` do Render PostgreSQL no Render;
+- usar `DATABASE_SCHEMA=ticketly` quando o banco Render for compartilhado;
 - executar migrations no deploy antes de iniciar o Uvicorn.
 
 ## Seeds
