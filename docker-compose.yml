@@ -1,0 +1,83 @@
+services:
+  api:
+    build:
+      context: .
+    environment:
+      APP_NAME: Ticketly API
+      APP_VERSION: 0.1.0
+      APP_ENV: local
+      DATABASE_URL: postgresql+psycopg://ticketly_user:ticketly_user@db:5432/ticketly_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=5)\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ticketly_user
+      POSTGRES_PASSWORD: ticketly_user
+      POSTGRES_DB: ticketly_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ticketly-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketly_user -d ticketly_db"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+
+  test-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ticketly_user
+      POSTGRES_PASSWORD: ticketly_user
+      POSTGRES_DB: ticketly_test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ticketly-test-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketly_user -d ticketly_test_db"]
+      interval: 6000s
+      timeout: 5s
+      retries: 5
+
+  test:
+    build:
+      context: .
+    profiles:
+      - test
+    environment:
+      APP_NAME: Ticketly API
+      APP_VERSION: 0.1.0
+      APP_ENV: test
+      DATABASE_URL: postgresql+psycopg://ticketly_user:ticketly_user@test-db:5432/ticketly_test_db
+      TEST_DATABASE_URL: postgresql+psycopg://ticketly_user:ticketly_user@test-db:5432/ticketly_test_db
+    volumes:
+      - .:/app
+    depends_on:
+      test-db:
+        condition: service_healthy
+    command: pytest
+
+volumes:
+  ticketly-db-data:
+  ticketly-test-db-data:

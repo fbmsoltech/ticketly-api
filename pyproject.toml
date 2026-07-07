@@ -10,9 +10,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic",
+    "email-validator",
     "fastapi",
     "psycopg[binary]",
+    "pwdlib[argon2]",
     "pydantic-settings",
+    "pyjwt",
     "sqlalchemy>=2.0",
     "uvicorn[standard]",
 ]
@@ -20,7 +23,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "black",
+    "httpx",
     "mypy",
+    "pytest",
     "ruff",
 ]
 
@@ -42,3 +47,12 @@ target-version = ["py313"]
 python_version = "3.13"
 strict = true
 warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+    "unit: testes unitarios sem dependencia de infraestrutura externa",
+    "integration: testes de integracao com banco, API ou multiplas camadas reais",
+]

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  quality-migrations-tests:
+    name: Quality, migrations and tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ticketly_user
+          POSTGRES_PASSWORD: ticketly_user
+          POSTGRES_DB: ticketly_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ticketly_user -d ticketly_test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_NAME: Ticketly API
+      APP_VERSION: 0.1.0
+      APP_ENV: test
+      DATABASE_URL: postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_test_db
+      TEST_DATABASE_URL: postgresql+psycopg://ticketly_user:ticketly_user@localhost:5432/ticketly_test_db
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run Ruff
+        run: ruff check .
+
+      - name: Run Black
+        run: black --check .
+
+      - name: Run Mypy
+        run: mypy app tests
+
+      - name: Run unit tests
+        run: pytest -m unit
+
+      - name: Run Alembic migrations
+        run: alembic upgrade head
+
+      - name: Run integration tests
+        run: pytest -m integration

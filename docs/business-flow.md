@@ -4,7 +4,9 @@
 
 O Ticketly API será uma API REST para gestão de tickets de suporte técnico.
 
-O sistema permitirá que clientes registrem solicitações de suporte, que atendentes acompanhem e respondam essas solicitações, e que administradores gerenciem usuários, papéis e configurações relacionadas ao atendimento.
+O sistema permitirá que clientes registrem solicitações de suporte, que
+atendentes acompanhem e respondam essas solicitações, e que administradores
+gerenciem usuários, papéis e configurações relacionadas ao atendimento.
 
 ## Principais atores
 
@@ -39,7 +41,8 @@ Responsabilidades previstas:
 - gerenciar usuários;
 - gerenciar papéis;
 - acompanhar tickets;
-- configurar categorias, status e prioridades quando essas funcionalidades existirem.
+- configurar categorias, status e prioridades quando essas funcionalidades
+  existirem.
 
 ## Fluxo básico de abertura de ticket
 
@@ -68,8 +71,25 @@ Regras previstas:
 Regras previstas:
 
 - Um ticket pode ser atribuído a um atendente.
-- A atribuição deve respeitar permissões futuras.
+- A atribuicao atual aceita somente usuarios com papel `ADMIN` ou `AGENT`.
 - A regra de atendimento deve ficar na camada de services.
+
+## Regras atuais do CRUD de tickets
+
+O CRUD de tickets permite uso administrativo e de atendimento.
+
+Regras atuais:
+
+- `ADMIN` pode criar, listar, consultar, atualizar, atribuir e excluir tickets;
+- `AGENT` pode criar, listar, consultar e atualizar tickets;
+- `CUSTOMER` nao acessa o CRUD de tickets diretamente;
+- exclusao de tickets exige `ADMIN`;
+- criacao e atualizacao validam customer, categoria, status e prioridade;
+- atribuicao valida se o usuario responsavel existe e possui papel `ADMIN` ou
+  `AGENT`.
+
+A abertura direta por cliente autenticado sera tratada separadamente com regras
+de acesso aos proprios tickets.
 
 ## Fluxo básico de comentários
 
@@ -84,7 +104,8 @@ Regras previstas:
 - Um ticket pode ter vários comentários.
 - Comentários devem manter vínculo com o ticket.
 - Comentários devem manter vínculo com o autor.
-- Permissões de comentário dependerão do papel do usuário e do relacionamento com o ticket.
+- Permissões de comentário dependerão do papel do usuário e do relacionamento
+  com o ticket.
 
 ## Fluxo básico de mudança de status
 
@@ -93,7 +114,7 @@ Regras previstas:
 3. O sistema atualiza o status do ticket.
 4. A mudança fica refletida no acompanhamento do ticket.
 
-Status específicos serão definidos em fase futura.
+Status específicos serão definidos em uma entrega própria.
 
 Regras previstas:
 
@@ -128,9 +149,9 @@ Regras iniciais previstas:
 - Atendentes devem acessar recursos relacionados ao atendimento.
 - Administradores devem ter acesso a recursos de gestão.
 
-## Modelagem inicial da Fase 4
+## Modelagem inicial
 
-A Fase 4 cria a representação persistida inicial das entidades previstas:
+A representação persistida inicial cobre as entidades previstas:
 
 - usuários e papéis;
 - clientes;
@@ -140,4 +161,16 @@ A Fase 4 cria a representação persistida inicial das entidades previstas:
 
 Essa modelagem registra apenas a estrutura relacional inicial. Regras como
 transições de status, permissões, atribuição de atendentes e validação de acesso
-serão implementadas em services nas fases futuras.
+serão implementadas em services quando esses fluxos forem detalhados.
+
+## Contratos e persistência
+
+Schemas e repositories preparam a evolução do domínio mantendo contratos de API
+separados da persistência.
+
+Os schemas representam dados de entrada e saída para uso pela API. Os
+repositories encapsulam consultas e operações de persistência para que services
+possam coordenar regras de negócio.
+
+O projeto ainda não define regras de transição de status, permissões,
+atribuição de atendentes, autenticação ou autorização.
