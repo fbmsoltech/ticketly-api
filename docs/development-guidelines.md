@@ -136,6 +136,17 @@ O código deverá seguir as práticas abaixo:
 - usar SQLAlchemy 2.x em estilo moderno;
 - usar migrations com Alembic.
 
+## Observabilidade
+
+- nao logar senha;
+- nao logar token;
+- nao logar header `Authorization`;
+- nao logar cookies ou headers sensiveis;
+- nao logar body de requisicao por padrao;
+- usar readiness para validar dependencias como banco de dados;
+- usar liveness apenas para verificar se o processo da aplicacao esta vivo;
+- manter metricas basicas sem dados pessoais ou segredos.
+
 ## Services de dominio
 
 Services de dominio devem receber a sessao ou repositories necessarios para

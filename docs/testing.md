@@ -20,7 +20,8 @@ Estrutura atual:
 - `tests/unit/`: testes unitarios sem banco ou infraestrutura externa;
 - `tests/integration/services/`: testes de services com repositories e banco
   reais;
-- `tests/integration/api/`: testes de endpoints com `TestClient` e banco real.
+- `tests/integration/api/`: testes de endpoints com `TestClient` e banco real;
+- `tests/unit/observability/`: testes unitarios do coletor de metricas.
 
 ## Unit Tests
 
@@ -157,3 +158,9 @@ Os testes de comentarios cobrem:
 - exclusao restrita a `ADMIN`;
 - rejeicao de `CUSTOMER`;
 - garantia de que o body nao sobrescreve o autor.
+
+## Testes de Observabilidade
+
+Os testes de observabilidade cobrem estado inicial do coletor de metricas,
+incremento de requisicoes, contadores por metodo e status code, total de
+respostas 5xx, estrutura do snapshot, health checks e endpoint de metricas.

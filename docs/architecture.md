@@ -31,6 +31,7 @@ app/
 |           |-- common.py
 |           |-- customers.py
 |           |-- health.py
+|           |-- metrics.py
 |           |-- roles.py
 |           |-- ticket_categories.py
 |           |-- ticket_comments.py
@@ -63,6 +64,10 @@ app/
 |   |-- ticket_priority.py
 |   |-- ticket_status.py
 |   `-- user.py
+|-- observability/
+|   |-- logging.py
+|   |-- metrics.py
+|   `-- middleware.py
 |-- schemas/
 |   |-- base.py
 |   |-- customer.py
@@ -105,14 +110,18 @@ Responsabilidades atuais:
 - `app/main.py`: cria a instância FastAPI e registra as rotas da versão v1.
 - `app/api/v1/dependencies/services.py`: monta services a partir da sessão de
   banco da requisição.
-- `app/api/v1/routes/health.py`: expõe o endpoint simples de health check.
+- `app/api/v1/routes/health.py`: expoe health check completo, liveness e
+  readiness.
+- `app/api/v1/routes/metrics.py`: expoe metricas basicas em memoria.
 - `app/api/v1/routes/`: expõe endpoints CRUD REST para as entidades base.
 - `app/core/config.py`: centraliza configurações com Pydantic Settings,
-  incluindo `DATABASE_URL`.
+  incluindo `DATABASE_URL` e flags basicas de observabilidade.
 - `app/db/base.py`: define a base declarativa do SQLAlchemy.
 - `app/db/session.py`: define engine, sessionmaker e ciclo transacional da
   sessão por requisição.
 - `app/models/`: define as entidades persistidas e seus relacionamentos.
+- `app/observability/`: concentra logging estruturado, middleware de logging de
+  requisicoes e coletor de metricas em memoria.
 - `app/schemas/`: define contratos Pydantic v2 de criação, atualização e
   leitura para uso futuro pela API.
 - `app/repositories/`: encapsula consultas e operações básicas de persistência
@@ -126,8 +135,8 @@ Responsabilidades atuais:
 - `.github/workflows/ci.yml`: valida qualidade, migrations e testes no GitHub
   Actions.
 
-O endpoint de health check não consulta banco de dados nem qualquer dependência
-externa.
+O health check completo e readiness consultam o banco de dados por meio de
+service. Liveness verifica apenas se a aplicacao esta viva.
 
 Ainda nao fazem parte do projeto:
 
@@ -228,6 +237,18 @@ Responsabilidades esperadas:
 - validar payloads de entrada;
 - formatar respostas;
 - separar dados internos do banco de dados dos contratos públicos da API.
+
+### Observability
+
+A camada `app/observability/` concentra recursos transversais de visibilidade da
+aplicacao:
+
+- configuracao de logging com a biblioteca padrao;
+- middleware de logging de requisicoes HTTP;
+- coletor simples de metricas em memoria.
+
+Essa camada nao contem regras de negocio de dominio e nao registra bodies,
+senhas, tokens ou headers sensiveis.
 
 ## Camada de banco
 

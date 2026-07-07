@@ -8,8 +8,33 @@ Base path:
 
 ## Rotas publicas
 
-- `GET /health`: health check simples, sem consulta ao banco;
+- `GET /health`: health check completo com componente de banco;
+- `GET /health/live`: liveness check sem consulta ao banco;
+- `GET /health/ready`: readiness check com consulta ao banco;
+- `GET /metrics`: metricas basicas em memoria;
 - `POST /auth/login`: autentica usuario e retorna access token.
+
+### GET /health
+
+Retorna o estado geral da aplicacao e dos componentes observados.
+
+### GET /health/live
+
+Verifica apenas se o processo da API esta vivo. Nao consulta banco.
+
+### GET /health/ready
+
+Verifica se a API esta pronta para receber trafego, incluindo banco. Quando o
+banco esta indisponivel, retorna `503` com payload `degraded`.
+
+### GET /metrics
+
+Retorna metricas basicas em memoria: uptime, total de requisicoes, totais por
+metodo HTTP, totais por status code, total de respostas 5xx e ultima duracao
+registrada.
+
+O endpoint e publico para uso local. Em producao, deve ser protegido ou exposto
+apenas internamente.
 
 ### POST /auth/login
 
