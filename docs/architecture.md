@@ -123,6 +123,8 @@ Responsabilidades atuais:
 - `app/api/v1/routes/`: expõe endpoints CRUD REST para as entidades base.
 - `app/core/config.py`: centraliza configurações com Pydantic Settings,
   incluindo `DATABASE_URL` e flags basicas de observabilidade.
+- `DATABASE_SCHEMA`: define o schema PostgreSQL usado pela metadata, conexoes da
+  aplicacao e migrations Alembic.
 - `app/db/base.py`: define a base declarativa do SQLAlchemy.
 - `app/db/session.py`: define engine, sessionmaker e ciclo transacional da
   sessão por requisição.
@@ -158,6 +160,17 @@ Render Web Service
 Ticketly API
         |
 Render PostgreSQL
+```
+
+Em deploy compartilhado, o banco fisico do Render pode conter um schema dedicado
+para a Ticketly:
+
+```text
+Render PostgreSQL compartilhado
+        |
+schema ticketly
+        |
+tabelas da Ticketly API
 ```
 
 O Render Web Service executa o build com `pip install -e .` e inicia a aplicacao
