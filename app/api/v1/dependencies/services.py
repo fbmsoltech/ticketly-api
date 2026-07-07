@@ -11,6 +11,7 @@ from app.repositories.ticket_priority import TicketPriorityRepository
 from app.repositories.ticket_status import TicketStatusRepository
 from app.services.auth_service import AuthService
 from app.services.customer import CustomerService
+from app.services.health_service import HealthService
 from app.services.role import RoleService
 from app.services.ticket_category import TicketCategoryService
 from app.services.ticket_comment_service import TicketCommentService
@@ -58,3 +59,9 @@ def get_ticket_service(db: DatabaseSession) -> TicketService:
 
 def get_ticket_comment_service(db: DatabaseSession) -> TicketCommentService:
     return TicketCommentService(db)
+
+
+def get_health_service(db: DatabaseSession) -> HealthService:
+    from app.core.config import settings
+
+    return HealthService(db, settings)

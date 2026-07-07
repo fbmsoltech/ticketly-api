@@ -7,8 +7,9 @@ com arquitetura limpa, domínio bem documentado, CRUD completo, autenticação,
 autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
 > Status: API com CRUD das entidades base, CRUD de tickets com regras de
-> negocio, autenticacao JWT, autorizacao por papeis, testes automatizados,
-> ambiente local com Docker Compose e CI com GitHub Actions.
+> negocio, autenticacao JWT, autorizacao por papeis, observabilidade basica,
+> testes automatizados, ambiente local com Docker Compose e CI com GitHub
+> Actions.
 
 ## Stack planejada
 
@@ -88,6 +89,7 @@ Documentos iniciais:
 - `docs/ci.md`
 - `docs/tickets.md`
 - `docs/ticket-comments.md`
+- `docs/observability.md`
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
 
@@ -111,10 +113,22 @@ A API ficará disponível em:
 http://localhost:8000
 ```
 
-O health check fica em:
+Os endpoints de observabilidade ficam em:
 
 ```text
 GET http://localhost:8000/api/v1/health
+GET http://localhost:8000/api/v1/health/live
+GET http://localhost:8000/api/v1/health/ready
+GET http://localhost:8000/api/v1/metrics
+```
+
+Exemplos com `curl`:
+
+```bash
+curl http://localhost:8000/api/v1/health
+curl http://localhost:8000/api/v1/health/live
+curl http://localhost:8000/api/v1/health/ready
+curl http://localhost:8000/api/v1/metrics
 ```
 
 Para executar os testes usando o banco PostgreSQL de testes do Docker Compose:
@@ -177,6 +191,9 @@ uvicorn app.main:app --reload
 Endpoints disponíveis:
 
 - `GET /api/v1/health`
+- `GET /api/v1/health/live`
+- `GET /api/v1/health/ready`
+- `GET /api/v1/metrics`
 - `POST /api/v1/auth/login`
 - `GET /api/v1/auth/me`
 - CRUD de `roles` em `/api/v1/roles`
@@ -188,7 +205,9 @@ Endpoints disponíveis:
 - CRUD de `tickets` em `/api/v1/tickets`
 - Comentarios de tickets em `/api/v1/tickets/{ticket_id}/comments`
 
-O health check não consulta o banco de dados.
+O health check completo e o readiness consultam o banco de dados. O liveness nao
+consulta dependencias externas. As metricas ficam em memoria e sao publicas para
+uso local; em producao, devem ser protegidas ou expostas apenas internamente.
 
 ## Autenticacao e autorizacao
 
@@ -220,7 +239,7 @@ Rotas protegidas:
 - `/api/v1/tickets/{ticket_id}/comments`: `ADMIN` ou `AGENT`, exceto `DELETE`,
   que exige `ADMIN`.
 
-O health check e `/api/v1/auth/login` sao publicos.
+Os health checks, `/api/v1/metrics` e `/api/v1/auth/login` sao publicos.
 
 Como ainda nao existe seed automatico, para validacao manual pode ser necessario
 criar a role `ADMIN` diretamente no banco. Exemplo SQL:

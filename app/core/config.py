@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "change-me-in-production-use-a-strong-secret-key"
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
+    log_level: str = "INFO"
+    enable_request_logging: bool = True
+    enable_metrics: bool = True
 
     model_config = SettingsConfigDict(
         env_file=".env",
