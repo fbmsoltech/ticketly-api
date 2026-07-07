@@ -160,6 +160,20 @@ O código deverá seguir as práticas abaixo:
 - usar `DATABASE_URL` do Render PostgreSQL no Render;
 - executar migrations no deploy antes de iniciar o Uvicorn.
 
+## Seeds
+
+Seeds devem preparar dados iniciais sem destruir ou sobrescrever dados
+existentes.
+
+Regras:
+
+- seeds devem ser idempotentes;
+- seeds nao devem apagar dados;
+- seeds nao devem sobrescrever senhas;
+- seeds nao devem conter secrets;
+- dados sensiveis devem vir de variaveis de ambiente;
+- nunca logar senha do admin inicial.
+
 ## Services de dominio
 
 Services de dominio devem receber a sessao ou repositories necessarios para

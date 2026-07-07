@@ -21,6 +21,8 @@ Estrutura atual:
 - `tests/integration/services/`: testes de services com repositories e banco
   reais;
 - `tests/integration/api/`: testes de endpoints com `TestClient` e banco real;
+- `tests/unit/seed/`: testes unitarios de validacoes e constantes do seed;
+- `tests/integration/seed/`: testes de criacao real e idempotencia do seed;
 - `tests/unit/observability/`: testes unitarios do coletor de metricas.
 
 ## Unit Tests
@@ -164,3 +166,13 @@ Os testes de comentarios cobrem:
 Os testes de observabilidade cobrem estado inicial do coletor de metricas,
 incremento de requisicoes, contadores por metodo e status code, total de
 respostas 5xx, estrutura do snapshot, health checks e endpoint de metricas.
+
+## Testes de Seed
+
+Os testes unitarios de seed validam regras sem banco, como senha inicial
+invalida, ausencia obrigatoria de credenciais quando o admin inicial esta
+desativado e consistencia dos dados base.
+
+Os testes de integracao de seed usam banco de teste para validar criacao de
+roles, status, prioridades, categorias, admin inicial com senha hasheada e
+idempotencia ao executar o seed mais de uma vez.
