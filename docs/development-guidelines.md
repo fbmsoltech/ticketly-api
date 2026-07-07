@@ -147,6 +147,19 @@ O código deverá seguir as práticas abaixo:
 - usar liveness apenas para verificar se o processo da aplicacao esta vivo;
 - manter metricas basicas sem dados pessoais ou segredos.
 
+## Configuracao e deploy
+
+- nunca versionar secrets;
+- nunca colocar `JWT_SECRET_KEY` real no repositorio;
+- nunca colocar `DATABASE_URL` real de producao no repositorio;
+- usar variaveis de ambiente para configuracao;
+- manter liveness independente do banco;
+- usar readiness para dependencias externas;
+- validar `APP_ENV=production` antes do deploy;
+- substituir qualquer placeholder de `JWT_SECRET_KEY` em producao;
+- usar `DATABASE_URL` do Render PostgreSQL no Render;
+- executar migrations no deploy antes de iniciar o Uvicorn.
+
 ## Services de dominio
 
 Services de dominio devem receber a sessao ou repositories necessarios para
@@ -250,6 +263,10 @@ PostgreSQL temporário para migrations e testes.
 
 O workflow atual não deve fazer deploy, entrega contínua, build e push de
 imagem Docker, configuração de Docker Hub ou uso de secrets reais.
+
+O deploy no Render deve ser configurado via `render.yaml`, push conectado ao
+servico do Render ou Dashboard. Nao implemente deploy via GitHub Actions neste
+escopo.
 
 ## Boas práticas de revisão
 

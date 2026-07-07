@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: ticketly-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -e .
+    startCommand: bash scripts/start.sh
+    healthCheckPath: /api/v1/health/live
+    envVars:
+      - key: APP_NAME
+        value: Ticketly API
+      - key: APP_VERSION
+        value: 0.1.0
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ENABLE_REQUEST_LOGGING
+        value: "true"
+      - key: ENABLE_METRICS
+        value: "true"
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ticketly-db
+          property: connectionString
+
+databases:
+  - name: ticketly-db
+    plan: free

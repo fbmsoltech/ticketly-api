@@ -27,6 +27,12 @@ esta vivo.
 Ele nao consulta o banco de dados e deve ser usado para checks que nao dependem
 de servicos externos.
 
+No Render, este e o health check path configurado:
+
+```text
+/api/v1/health/live
+```
+
 ## Readiness
 
 O endpoint `GET /api/v1/health/ready` verifica se a aplicacao esta pronta para
@@ -34,6 +40,9 @@ receber trafego.
 
 Esse endpoint consulta o banco com `SELECT 1`. Se o banco estiver indisponivel,
 a resposta retorna `503` e payload com status `degraded`.
+
+Em deploy no Render, use este endpoint para validar manualmente a conexao com o
+Render PostgreSQL depois que o Web Service estiver no ar.
 
 ## Logging estruturado
 
@@ -59,6 +68,12 @@ respostas 5xx e ultima duracao registrada.
 
 As metricas ficam apenas na memoria do processo. Reinicios da aplicacao zeram os
 contadores.
+
+Para validacao simples pos-deploy:
+
+```bash
+curl https://<render-service-url>/api/v1/metrics
+```
 
 ## Configuracao
 

@@ -40,7 +40,7 @@ services:
       - ticketly-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketly_user -d ticketly_db"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
 
@@ -56,7 +56,7 @@ services:
       - ticketly-test-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ticketly_user -d ticketly_test_db"]
-      interval: 10s
+      interval: 6000s
       timeout: 5s
       retries: 5
 

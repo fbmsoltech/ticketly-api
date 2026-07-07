@@ -8,8 +8,8 @@ autorização, banco relacional, testes automatizados, Docker, CI/CD e deploy.
 
 > Status: API com CRUD das entidades base, CRUD de tickets com regras de
 > negocio, autenticacao JWT, autorizacao por papeis, observabilidade basica,
-> testes automatizados, ambiente local com Docker Compose e CI com GitHub
-> Actions.
+> testes automatizados, ambiente local com Docker Compose, CI com GitHub
+> Actions e preparo de deploy no Render.
 
 ## Stack planejada
 
@@ -92,13 +92,15 @@ Documentos iniciais:
 - `docs/observability.md`
 - `docs/schemas-and-repositories.md`
 - `docs/services.md`
+- `docs/deployment.md`
 
 ## Execução local
 
 O projeto usa Python 3.13+ e inclui a modelagem inicial do dominio, schemas
 Pydantic v2, repositories, services, endpoints CRUD REST para as entidades base,
 autenticacao JWT, autorizacao por papeis, testes automatizados com Pytest e
-ambiente local com Docker Compose. Ainda nao ha CD ou deploy.
+ambiente local com Docker Compose. O deploy no Render e documentado
+separadamente e nao e executado pelo GitHub Actions.
 
 Para subir o ambiente local completo com API, PostgreSQL principal e PostgreSQL
 para testes:
@@ -120,6 +122,7 @@ GET http://localhost:8000/api/v1/health
 GET http://localhost:8000/api/v1/health/live
 GET http://localhost:8000/api/v1/health/ready
 GET http://localhost:8000/api/v1/metrics
+GET http://localhost:8000/api/v1/docs
 ```
 
 Exemplos com `curl`:
@@ -208,6 +211,20 @@ Endpoints disponíveis:
 O health check completo e o readiness consultam o banco de dados. O liveness nao
 consulta dependencias externas. As metricas ficam em memoria e sao publicas para
 uso local; em producao, devem ser protegidas ou expostas apenas internamente.
+
+## Deploy no Render
+
+Consulte `docs/deployment.md`.
+
+Endpoints para validacao apos o deploy:
+
+```text
+/api/v1/health/live
+/api/v1/health/ready
+/api/v1/docs
+```
+
+A documentacao interativa do FastAPI permanece disponivel em `/api/v1/docs`.
 
 ## Autenticacao e autorizacao
 

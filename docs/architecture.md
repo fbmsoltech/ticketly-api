@@ -17,7 +17,9 @@ A aplicação expõe endpoints CRUD REST para as entidades base já cobertas por
 schemas, repositories e services, mantendo rotas finas e delegando operações de
 aplicação para services. O ambiente local usa Docker Compose para executar a API
 e bancos PostgreSQL separados para desenvolvimento e testes. A qualidade do
-projeto é validada por uma pipeline de CI no GitHub Actions.
+projeto é validada por uma pipeline de CI no GitHub Actions. O deploy e
+preparado para o Render com Web Service FastAPI, Render PostgreSQL e migrations
+executadas antes do Uvicorn.
 
 Estrutura atual relevante:
 
@@ -100,6 +102,9 @@ alembic/
 `-- script.py.mako
 docker-compose.yml
 Dockerfile
+render.yaml
+scripts/
+`-- start.sh
 .github/
 `-- workflows/
     `-- ci.yml
@@ -132,16 +137,32 @@ Responsabilidades atuais:
 - `Dockerfile`: define a imagem local da API.
 - `docker-compose.yml`: orquestra a API, o PostgreSQL principal e o PostgreSQL
   de testes.
+- `render.yaml`: documenta a infraestrutura Render via Blueprint.
+- `scripts/start.sh`: executa migrations Alembic e inicia Uvicorn no deploy.
 - `.github/workflows/ci.yml`: valida qualidade, migrations e testes no GitHub
   Actions.
 
 O health check completo e readiness consultam o banco de dados por meio de
 service. Liveness verifica apenas se a aplicacao esta viva.
 
-Ainda nao fazem parte do projeto:
+## Visao de deploy
 
-- deploy;
-- entrega continua.
+```text
+Render Web Service
+        |
+Ticketly API
+        |
+Render PostgreSQL
+```
+
+O Render Web Service executa o build com `pip install -e .` e inicia a aplicacao
+com `bash scripts/start.sh`. O script roda `alembic upgrade head` antes do
+Uvicorn para manter o schema do Render PostgreSQL alinhado as migrations
+versionadas.
+
+O health check configurado no Render usa `/api/v1/health/live`, que nao consulta
+o banco. A verificacao de readiness continua em `/api/v1/health/ready` e valida
+a dependencia externa PostgreSQL.
 
 ## Integração contínua
 
@@ -156,6 +177,10 @@ Ela valida:
 
 O workflow usa um PostgreSQL temporário do GitHub Actions para validar
 migrations e testes sem depender de banco de produção.
+
+O deploy no Render e acionado pelo proprio Render via Blueprint, push conectado
+ao servico ou configuracao manual no Dashboard. O GitHub Actions permanece
+responsavel apenas por integracao continua.
 
 ## Separaçao de responsabilidades
 

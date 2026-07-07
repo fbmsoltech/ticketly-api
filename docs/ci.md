@@ -62,5 +62,6 @@ O workflow atual cobre apenas integracao continua.
 Ele nao faz deploy, nao publica imagens Docker, nao usa Docker Hub e nao depende
 de secrets reais.
 
-Deploy e entrega continua devem ser tratados em documentacao e workflows
-proprios quando esse escopo existir.
+O deploy no Render e feito pelo proprio Render por Blueprint, push conectado ao
+servico ou configuracao manual via Dashboard. Nesta etapa, o GitHub Actions nao
+executa deploy e nao recebe secrets de producao.
